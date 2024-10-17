@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,16 +32,17 @@ public final class PropertyCopier {
     Class<?> parent = type;
     while (parent != null) {
       final Field[] fields = parent.getDeclaredFields();
-      for (Field field : fields) {
+      for(Field field : fields) {
         try {
           try {
             field.set(destinationBean, field.get(sourceBean));
           } catch (IllegalAccessException e) {
-            if (!Reflector.canControlMemberAccessible()) {
+            if (Reflector.canControlMemberAccessible()) {
+              field.setAccessible(true);
+              field.set(destinationBean, field.get(sourceBean));
+            } else {
               throw e;
             }
-            field.setAccessible(true);
-            field.set(destinationBean, field.get(sourceBean));
           }
         } catch (Exception e) {
           // Nothing useful to do, will only fail on final fields, which will be ignored.

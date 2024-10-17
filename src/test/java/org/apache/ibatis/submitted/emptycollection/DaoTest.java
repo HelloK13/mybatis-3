@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,15 +29,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class DaoTest {
+public class DaoTest {
   private Connection conn;
   private Dao dao;
   private SqlSession sqlSession;
 
   @BeforeEach
-  void setUp() throws Exception {
-    try (Reader reader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/emptycollection/mybatis-config.xml")) {
+  public void setUp() throws Exception {
+    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/emptycollection/mybatis-config.xml")) {
       SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
       sqlSession = sqlSessionFactory.openSession();
     }
@@ -48,13 +47,13 @@ class DaoTest {
   }
 
   @AfterEach
-  void tearDown() throws Exception {
+  public void tearDown() throws Exception {
     conn.close();
     sqlSession.close();
   }
 
   @Test
-  void testWithEmptyList() {
+  public void testWithEmptyList() throws Exception {
     final List<TodoLists> actual = dao.selectWithEmptyList();
     Assertions.assertEquals(1, actual.size());
     final List<TodoItem> todoItems = actual.get(0).getTodoItems();
@@ -62,21 +61,20 @@ class DaoTest {
   }
 
   @Test
-  void testWithNonEmptyList() {
+  public void testWithNonEmptyList() throws Exception {
     final List<TodoLists> actual = dao.selectWithNonEmptyList();
     checkNonEmptyList(actual);
   }
 
   @Test
-  void testWithNonEmptyList_noCollectionId() {
+  public void testWithNonEmptyList_noCollectionId() throws Exception {
     final List<TodoLists> actual = dao.selectWithNonEmptyList_noCollectionId();
 
     checkNonEmptyList(actual);
   }
 
   private void checkNonEmptyList(final List<TodoLists> actual) {
-    // Assertions.assertEquals("[List(1)=[a description(1), a 2nd description(2)], List(2)=[a description(1)]]",
-    // actual.toString());
+//  Assertions.assertEquals("[List(1)=[a description(1), a 2nd description(2)], List(2)=[a description(1)]]", actual.toString());
     Assertions.assertEquals(2, actual.size());
 
     Assertions.assertEquals(2, actual.get(0).getTodoItems().size());

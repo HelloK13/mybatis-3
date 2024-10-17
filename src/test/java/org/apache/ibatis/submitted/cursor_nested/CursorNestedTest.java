@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,6 @@
  *    limitations under the License.
  */
 package org.apache.ibatis.submitted.cursor_nested;
-
-import java.io.Reader;
-import java.util.Iterator;
 
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.cursor.Cursor;
@@ -29,15 +26,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class CursorNestedTest {
+import java.io.Reader;
+import java.util.Iterator;
+
+public class CursorNestedTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     // create a SqlSessionFactory
-    try (
-        Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/cursor_nested/mybatis-config.xml")) {
+    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/cursor_nested/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
@@ -47,7 +46,7 @@ class CursorNestedTest {
   }
 
   @Test
-  void shouldGetAllUser() {
+  public void shouldGetAllUser() {
     Cursor<User> usersCursor;
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -90,7 +89,7 @@ class CursorNestedTest {
   }
 
   @Test
-  void testCursorWithRowBound() {
+  public void testCursorWithRowBound() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, new RowBounds(2, 1));
 

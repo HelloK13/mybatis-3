@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,25 +29,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class DuplicateStatementsTest {
+public class DuplicateStatementsTest {
 
   private SqlSessionFactory sqlSessionFactory;
 
   @BeforeEach
-  void setupDb() throws Exception {
-    // create a SqlSessionFactory
-    try (Reader reader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/duplicate_statements/mybatis-config.xml")) {
-      sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-    }
+  public void setupDb() throws Exception {
+      // create a SqlSessionFactory
+      try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/duplicate_statements/mybatis-config.xml")) {
+        sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+      }
 
-    // populate in-memory database
-    BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/duplicate_statements/CreateDB.sql");
+      // populate in-memory database
+      BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
+              "org/apache/ibatis/submitted/duplicate_statements/CreateDB.sql");
   }
 
   @Test
-  void shouldGetAllUsers() {
+  public void shouldGetAllUsers() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<User> users = mapper.getAllUsers();
@@ -56,7 +55,7 @@ class DuplicateStatementsTest {
   }
 
   @Test
-  void shouldGetFirstFourUsers() {
+  public void shouldGetFirstFourUsers() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       List<User> users = mapper.getAllUsers(new RowBounds(0, 4));
@@ -66,7 +65,7 @@ class DuplicateStatementsTest {
 
   @Test
   @Disabled("fails currently - issue 507")
-  void shouldGetAllUsers_Annotated() {
+  public void shouldGetAllUsers_Annotated() {
     sqlSessionFactory.getConfiguration().addMapper(AnnotatedMapper.class);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       AnnotatedMapper mapper = sqlSession.getMapper(AnnotatedMapper.class);
@@ -77,7 +76,7 @@ class DuplicateStatementsTest {
 
   @Test
   @Disabled("fails currently - issue 507")
-  void shouldGetFirstFourUsers_Annotated() {
+  public void shouldGetFirstFourUsers_Annotated() {
     sqlSessionFactory.getConfiguration().addMapper(AnnotatedMapper.class);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       AnnotatedMapper mapper = sqlSession.getMapper(AnnotatedMapper.class);
@@ -87,8 +86,9 @@ class DuplicateStatementsTest {
   }
 
   @Test
-  void shouldFailForDuplicateMethod() {
-    Assertions.assertThrows(IllegalArgumentException.class,
-        () -> sqlSessionFactory.getConfiguration().addMapper(AnnotatedMapperExtended.class));
+  public void shouldFailForDuplicateMethod() {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      sqlSessionFactory.getConfiguration().addMapper(AnnotatedMapperExtended.class);
+    });
   }
 }

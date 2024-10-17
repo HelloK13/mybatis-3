@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,16 @@
  */
 package org.apache.ibatis.reflection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-class ArrayUtilTest {
+public class ArrayUtilTest extends ArrayUtil {
 
   @Test
-  void testHashCode() {
+  public void testHashCode() throws Exception {
     Object arr;
     arr = new long[] { 1 };
     assertEquals(Arrays.hashCode((long[]) arr), ArrayUtil.hashCode(arr));
@@ -53,7 +51,7 @@ class ArrayUtilTest {
   }
 
   @Test
-  void testequals() {
+  public void testequals() throws Exception {
     assertTrue(ArrayUtil.equals(new long[] { 1 }, new long[] { 1 }));
     assertTrue(ArrayUtil.equals(new int[] { 1 }, new int[] { 1 }));
     assertTrue(ArrayUtil.equals(new short[] { 1 }, new short[] { 1 }));
@@ -83,7 +81,7 @@ class ArrayUtilTest {
   }
 
   @Test
-  void testToString() {
+  public void testToString() throws Exception {
     Object arr;
     arr = new long[] { 1 };
     assertEquals(Arrays.toString((long[]) arr), ArrayUtil.toString(arr));
@@ -104,7 +102,7 @@ class ArrayUtilTest {
     arr = new Object[] { "str" };
     assertEquals(Arrays.toString((Object[]) arr), ArrayUtil.toString(arr));
 
-    assertEquals(Integer.toString(1), ArrayUtil.toString(1));
+    assertEquals(Integer.valueOf(1).toString(), ArrayUtil.toString(1));
     assertEquals("null", ArrayUtil.toString(null));
   }
 

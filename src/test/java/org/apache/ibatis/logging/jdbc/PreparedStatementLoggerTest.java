@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class PreparedStatementLoggerTest {
+public class PreparedStatementLoggerTest {
 
   @Mock
   Log log;
@@ -46,15 +46,15 @@ class PreparedStatementLoggerTest {
   @Mock
   ResultSet resultSet;
 
-  private PreparedStatement ps;
+  PreparedStatement ps;
 
   @BeforeEach
-  void setUp() throws SQLException {
+  public void setUp() throws SQLException {
     ps = PreparedStatementLogger.newInstance(this.preparedStatement, log, 1);
   }
 
   @Test
-  void shouldPrintParameters() throws SQLException {
+  public void shouldPrintParameters() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     when(preparedStatement.executeQuery(anyString())).thenReturn(resultSet);
 
@@ -67,7 +67,7 @@ class PreparedStatementLoggerTest {
   }
 
   @Test
-  void shouldPrintNullParameters() throws SQLException {
+  public void shouldPrintNullParameters() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     when(preparedStatement.execute(anyString())).thenReturn(true);
 
@@ -79,7 +79,7 @@ class PreparedStatementLoggerTest {
   }
 
   @Test
-  void shouldNotPrintLog() throws SQLException {
+  public void shouldNotPrintLog() throws SQLException {
     ps.getResultSet();
     ps.getParameterMetaData();
 
@@ -87,7 +87,7 @@ class PreparedStatementLoggerTest {
   }
 
   @Test
-  void shouldPrintUpdateCount() throws SQLException {
+  public void shouldPrintUpdateCount() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     when(preparedStatement.getUpdateCount()).thenReturn(1);
 

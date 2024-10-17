@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,9 +19,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ParamNameUtil {
   public static List<String> getParamNames(Method method) {
@@ -33,9 +32,15 @@ public class ParamNameUtil {
   }
 
   private static List<String> getParameterNames(Executable executable) {
-    return Arrays.stream(executable.getParameters()).map(Parameter::getName).collect(Collectors.toList());
+    final List<String> names = new ArrayList<>();
+    final Parameter[] params = executable.getParameters();
+    for (Parameter param : params) {
+      names.add(param.getName());
+    }
+    return names;
   }
 
   private ParamNameUtil() {
+    super();
   }
 }

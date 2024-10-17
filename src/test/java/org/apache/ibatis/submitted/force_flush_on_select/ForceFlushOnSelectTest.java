@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,7 @@
  */
 package org.apache.ibatis.submitted.force_flush_on_select;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.sql.Connection;
@@ -34,23 +33,22 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ForceFlushOnSelectTest {
+public class ForceFlushOnSelectTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeEach
-  void initDatabase() throws Exception {
-    try (Reader reader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/force_flush_on_select/ibatisConfig.xml")) {
+  public void initDatabase() throws Exception {
+    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/force_flush_on_select/ibatisConfig.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/force_flush_on_select/CreateDB.sql");
+            "org/apache/ibatis/submitted/force_flush_on_select/CreateDB.sql");
   }
 
   @Test
-  void testShouldFlushLocalSessionCacheOnQuery() throws SQLException {
+  public void testShouldFlushLocalSessionCacheOnQuery() throws SQLException {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE)) {
       PersonMapper personMapper = sqlSession.getMapper(PersonMapper.class);
       personMapper.selectByIdFlush(1);
@@ -62,7 +60,7 @@ class ForceFlushOnSelectTest {
   }
 
   @Test
-  void testShouldNotFlushLocalSessionCacheOnQuery() throws SQLException {
+  public void testShouldNotFlushLocalSessionCacheOnQuery() throws SQLException {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE)) {
       PersonMapper personMapper = sqlSession.getMapper(PersonMapper.class);
       personMapper.selectByIdNoFlush(1);
@@ -74,7 +72,7 @@ class ForceFlushOnSelectTest {
   }
 
   @Test
-  void testShouldFlushLocalSessionCacheOnQueryForList() throws SQLException {
+  public void testShouldFlushLocalSessionCacheOnQueryForList() throws SQLException {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE)) {
       PersonMapper personMapper = sqlSession.getMapper(PersonMapper.class);
       List<Person> people = personMapper.selectAllFlush();
@@ -86,7 +84,7 @@ class ForceFlushOnSelectTest {
   }
 
   @Test
-  void testShouldNotFlushLocalSessionCacheOnQueryForList() throws SQLException {
+  public void testShouldNotFlushLocalSessionCacheOnQueryForList() throws SQLException {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE)) {
       PersonMapper personMapper = sqlSession.getMapper(PersonMapper.class);
       List<Person> people = personMapper.selectAllNoFlush();
@@ -104,7 +102,7 @@ class ForceFlushOnSelectTest {
   }
 
   @Test
-  void testUpdateShouldFlushLocalCache() {
+  public void testUpdateShouldFlushLocalCache() throws SQLException {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE)) {
       PersonMapper personMapper = sqlSession.getMapper(PersonMapper.class);
       Person person = personMapper.selectByIdNoFlush(1);
@@ -118,7 +116,7 @@ class ForceFlushOnSelectTest {
   }
 
   @Test
-  void testSelectShouldFlushLocalCacheIfFlushLocalCacheAtferEachStatementIsTrue() throws SQLException {
+  public void testSelectShouldFlushLocalCacheIfFlushLocalCacheAtferEachStatementIsTrue() throws SQLException {
     sqlSessionFactory.getConfiguration().setLocalCacheScope(LocalCacheScope.STATEMENT);
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE)) {
       PersonMapper personMapper = sqlSession.getMapper(PersonMapper.class);

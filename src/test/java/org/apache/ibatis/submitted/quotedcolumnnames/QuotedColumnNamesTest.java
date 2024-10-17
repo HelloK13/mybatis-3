@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,36 +28,33 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class QuotedColumnNamesTest {
+public class QuotedColumnNamesTest {
 
   protected static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
-    try (Reader reader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/quotedcolumnnames/MapperConfig.xml")) {
+  public static void setUp() throws Exception {
+    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/quotedcolumnnames/MapperConfig.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/quotedcolumnnames/CreateDB.sql");
+            "org/apache/ibatis/submitted/quotedcolumnnames/CreateDB.sql");
   }
 
   @Test
-  void testIt() {
+  public void testIt() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      List<Map<String, Object>> list = sqlSession
-          .selectList("org.apache.ibatis.submitted.quotedcolumnnames.Map.doSelect");
+      List<Map<String, Object>> list = sqlSession.selectList("org.apache.ibatis.submitted.quotedcolumnnames.Map.doSelect");
       printList(list);
       assertColumnNames(list);
     }
   }
 
   @Test
-  void testItWithResultMap() {
+  public void testItWithResultMap() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      List<Map<String, Object>> list = sqlSession
-          .selectList("org.apache.ibatis.submitted.quotedcolumnnames.Map.doSelectWithResultMap");
+      List<Map<String, Object>> list = sqlSession.selectList("org.apache.ibatis.submitted.quotedcolumnnames.Map.doSelectWithResultMap");
       printList(list);
       assertColumnNames(list);
     }

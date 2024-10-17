@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package org.apache.ibatis.scripting.xmltags;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import ognl.OgnlContext;
 import ognl.OgnlRuntime;
@@ -39,16 +38,15 @@ public class DynamicContext {
   }
 
   private final ContextMap bindings;
-  private final StringJoiner sqlBuilder = new StringJoiner(" ");
-  private int uniqueNumber;
+  private final StringBuilder sqlBuilder = new StringBuilder();
+  private int uniqueNumber = 0;
 
   public DynamicContext(Configuration configuration, Object parameterObject) {
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = configuration.newMetaObject(parameterObject);
-      boolean existsTypeHandler = configuration.getTypeHandlerRegistry().hasTypeHandler(parameterObject.getClass());
-      bindings = new ContextMap(metaObject, existsTypeHandler);
+      bindings = new ContextMap(metaObject);
     } else {
-      bindings = new ContextMap(null, false);
+      bindings = new ContextMap(null);
     }
     bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
     bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
@@ -63,7 +61,8 @@ public class DynamicContext {
   }
 
   public void appendSql(String sql) {
-    sqlBuilder.add(sql);
+    sqlBuilder.append(sql);
+    sqlBuilder.append(" ");
   }
 
   public String getSql() {
@@ -76,12 +75,10 @@ public class DynamicContext {
 
   static class ContextMap extends HashMap<String, Object> {
     private static final long serialVersionUID = 2977601501966151582L;
-    private final MetaObject parameterMetaObject;
-    private final boolean fallbackParameterObject;
 
-    public ContextMap(MetaObject parameterMetaObject, boolean fallbackParameterObject) {
+    private MetaObject parameterMetaObject;
+    public ContextMap(MetaObject parameterMetaObject) {
       this.parameterMetaObject = parameterMetaObject;
-      this.fallbackParameterObject = fallbackParameterObject;
     }
 
     @Override
@@ -91,22 +88,19 @@ public class DynamicContext {
         return super.get(strKey);
       }
 
-      if (parameterMetaObject == null) {
-        return null;
+      if (parameterMetaObject != null) {
+        // issue #61 do not modify the context when reading
+        return parameterMetaObject.getValue(strKey);
       }
 
-      if (fallbackParameterObject && !parameterMetaObject.hasGetter(strKey)) {
-        return parameterMetaObject.getOriginalObject();
-      }
-      // issue #61 do not modify the context when reading
-      return parameterMetaObject.getValue(strKey);
+      return null;
     }
   }
 
   static class ContextAccessor implements PropertyAccessor {
 
     @Override
-    public Object getProperty(OgnlContext context, Object target, Object name) {
+    public Object getProperty(Map context, Object target, Object name) {
       Map map = (Map) target;
 
       Object result = map.get(name);
@@ -116,14 +110,14 @@ public class DynamicContext {
 
       Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
       if (parameterObject instanceof Map) {
-        return ((Map) parameterObject).get(name);
+        return ((Map)parameterObject).get(name);
       }
 
       return null;
     }
 
     @Override
-    public void setProperty(OgnlContext context, Object target, Object name, Object value) {
+    public void setProperty(Map context, Object target, Object name, Object value) {
       Map<Object, Object> map = (Map<Object, Object>) target;
       map.put(name, value);
     }

@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.submitted.timestamp_with_timezone;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.time.OffsetDateTime;
@@ -31,12 +31,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class TimestampWithTimezoneTypeHandlerTest {
+public class TimestampWithTimezoneTypeHandlerTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     try (Reader reader = Resources
         .getResourceAsReader("org/apache/ibatis/submitted/timestamp_with_timezone/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -46,18 +46,19 @@ class TimestampWithTimezoneTypeHandlerTest {
   }
 
   @Test
-  void shouldSelectOffsetDateTime() {
+  public void shouldSelectOffsetDateTime() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Record record = mapper.selectById(1);
       assertEquals(OffsetDateTime.of(2018, 1, 2, 11, 22, 33, 123456000, ZoneOffset.ofHoursMinutes(1, 23)),
           record.getOdt());
-      assertEquals(OffsetTime.of(11, 22, 33, 123456000, ZoneOffset.ofHoursMinutes(1, 23)), record.getOt());
+      // HSQLDB 2.4.1 truncates nano seconds.
+      assertEquals(OffsetTime.of(11, 22, 33, 0, ZoneOffset.ofHoursMinutes(1, 23)), record.getOt());
     }
   }
 
   @Test
-  void shouldInsertOffsetDateTime() {
+  public void shouldInsertOffsetDateTime() {
     OffsetDateTime odt = OffsetDateTime.of(2018, 1, 2, 11, 22, 33, 123456000, ZoneOffset.ofHoursMinutes(1, 23));
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -75,9 +76,9 @@ class TimestampWithTimezoneTypeHandlerTest {
     }
   }
 
-  @Disabled("HSQLDB does not support this.")
+  @Disabled("HSQLDB 2.4.1 does not support this.")
   @Test
-  void shouldInsertOffsetTime() {
+  public void shouldInsertOffsetTime() {
     OffsetTime ot = OffsetTime.of(11, 22, 33, 123456000, ZoneOffset.ofHoursMinutes(1, 23));
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);

@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,7 @@
  */
 package org.apache.ibatis.submitted.empty_row;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.util.Map;
@@ -28,33 +25,34 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ReturnInstanceForEmptyRowTest {
+public class ReturnInstanceForEmptyRowTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     // create an SqlSessionFactory
-    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/empty_row/mybatis-config.xml")) {
+    try (Reader reader = Resources
+        .getResourceAsReader("org/apache/ibatis/submitted/empty_row/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/empty_row/CreateDB.sql");
+            "org/apache/ibatis/submitted/empty_row/CreateDB.sql");
   }
 
   @BeforeEach
-  void resetCallSettersOnNulls() {
+  public void resetCallSettersOnNulls() {
     sqlSessionFactory.getConfiguration().setCallSettersOnNulls(false);
   }
 
   @Test
-  void shouldSimpleTypeBeNull() {
+  public void shouldSimpleTypeBeNull() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       String result = mapper.getString();
@@ -63,7 +61,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldObjectTypeNotBeNull() {
+  public void shouldObjectTypeNotBeNull() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Parent parent = mapper.getBean(1);
@@ -72,7 +70,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldMapBeEmpty() {
+  public void shouldMapBeEmpty() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Map<String, String> map = mapper.getMap(1);
@@ -82,7 +80,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldMapHaveColumnNamesIfCallSettersOnNullsEnabled() {
+  public void shouldMapHaveColumnNamesIfCallSettersOnNullsEnabled() {
     sqlSessionFactory.getConfiguration().setCallSettersOnNulls(true);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -94,7 +92,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldAssociationNotBeNull() {
+  public void shouldAssociationNotBeNull() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Parent parent = mapper.getAssociation(1);
@@ -103,7 +101,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldAssociationBeNullIfNotNullColumnSpecified() {
+  public void shouldAssociationBeNullIfNotNullColumnSpecified() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Parent parent = mapper.getAssociationWithNotNullColumn(1);
@@ -113,7 +111,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldNestedAssociationNotBeNull() {
+  public void shouldNestedAssociationNotBeNull() {
     // #420
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -123,7 +121,7 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void testCollection() {
+  public void testCollection() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Parent parent = mapper.getCollection(1);
@@ -133,31 +131,12 @@ class ReturnInstanceForEmptyRowTest {
   }
 
   @Test
-  void shouldSquashMultipleEmptyResults() {
+  public void shouldSquashMultipleEmptyResults() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Parent parent = mapper.getTwoCollections(2);
       assertEquals(1, parent.getPets().size());
       assertNotNull(parent.getPets().get(0));
-    }
-  }
-
-  @Test
-  void testConstructorAutomapping() {
-    try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      Mapper mapper = sqlSession.getMapper(Mapper.class);
-      ImmutableParent parent = mapper.selectImmutable(1);
-      assertNotNull(parent);
-    }
-  }
-
-  @Test
-  void testArgNameBasedConstructorAutomapping() {
-    sqlSessionFactory.getConfiguration().setArgNameBasedConstructorAutoMapping(true);
-    try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      Mapper mapper = sqlSession.getMapper(Mapper.class);
-      ImmutableParent parent = mapper.selectImmutable(1);
-      assertNotNull(parent);
     }
   }
 }

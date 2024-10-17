@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,16 +25,16 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ForEachMapTest {
+public class ForEachMapTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUpClass() throws Exception {
+  public static void setUpClass() throws Exception {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/foreach_map/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -42,21 +42,21 @@ class ForEachMapTest {
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/foreach_map/CreateDB.sql");
+            "org/apache/ibatis/submitted/foreach_map/CreateDB.sql");
   }
 
   @BeforeEach
-  void setUp() {
+  public void setUp() throws Exception {
     sqlSession = sqlSessionFactory.openSession();
   }
 
   @AfterEach
-  void tearDown() {
+  public void tearDown() throws Exception {
     sqlSession.close();
   }
 
   @Test
-  void shouldGetStringKeyStringValueEntries() {
+  public void shouldGetStringKeyStringValueEntries() {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put("key 1", "value 1");
     mapParam.getMap().put("key 2", "value 2");
@@ -68,7 +68,7 @@ class ForEachMapTest {
   }
 
   @Test
-  void shouldGetIntKeyBoolValueEntries() {
+  public void shouldGetIntKeyBoolValueEntries() throws Exception {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put(12345, true);
     mapParam.getMap().put(54321, false);
@@ -80,7 +80,7 @@ class ForEachMapTest {
   }
 
   @Test
-  void shouldGetNestedBeanKeyValueEntries() {
+  public void shouldGetNestedBeanKeyValueEntries() throws Exception {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put(new NestedBean(12345, true), new NestedBean(54321, false));
     mapParam.getMap().put(new NestedBean(67890, true), new NestedBean(9876, false));
@@ -92,7 +92,7 @@ class ForEachMapTest {
   }
 
   @Test
-  void shouldSubstituteIndexWithKey() {
+  public void shouldSubstituteIndexWithKey() throws Exception {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put("col_a", 22);
     mapParam.getMap().put("col_b", 222);

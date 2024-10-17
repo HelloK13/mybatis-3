@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,6 @@
  */
 package org.apache.ibatis.submitted.autodiscover;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Reader;
@@ -30,31 +29,31 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class AutodiscoverTest {
+public class AutodiscoverTest {
 
   protected static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setup() throws Exception {
+  public static void setup() throws Exception {
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/autodiscover/MapperConfig.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
   }
 
   @Test
-  void testTypeAlias() {
+  public void testTypeAlias() {
     TypeAliasRegistry typeAliasRegistry = sqlSessionFactory.getConfiguration().getTypeAliasRegistry();
-    assertNotNull(typeAliasRegistry.resolveAlias("testAlias"));
+    typeAliasRegistry.resolveAlias("testAlias");
   }
 
   @Test
-  void testTypeHandler() {
+  public void testTypeHandler() {
     TypeHandlerRegistry typeHandlerRegistry = sqlSessionFactory.getConfiguration().getTypeHandlerRegistry();
     assertTrue(typeHandlerRegistry.hasTypeHandler(BigInteger.class));
   }
 
   @Test
-  void testMapper() {
+  public void testMapper() {
     assertTrue(sqlSessionFactory.getConfiguration().hasMapper(DummyMapper.class));
   }
 }

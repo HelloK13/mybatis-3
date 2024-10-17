@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class StatementLoggerTest {
+public class StatementLoggerTest {
 
   @Mock
   Statement statement;
@@ -41,15 +41,15 @@ class StatementLoggerTest {
   @Mock
   Log log;
 
-  private Statement st;
+  Statement st;
 
   @BeforeEach
-  void setUp() throws SQLException {
+  public void setUp() throws SQLException {
     st = StatementLogger.newInstance(statement, log, 1);
   }
 
   @Test
-  void shouldPrintLog() throws SQLException {
+  public void shouldPrintLog() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     st.executeQuery("select 1");
 
@@ -57,7 +57,7 @@ class StatementLoggerTest {
   }
 
   @Test
-  void shouldPrintLogForUpdate() throws SQLException {
+  public void shouldPrintLogForUpdate() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     when(statement.execute(anyString())).thenReturn(true);
     String sql = "update name = '' from test";
@@ -68,7 +68,7 @@ class StatementLoggerTest {
   }
 
   @Test
-  void shouldNotPrintLog() throws SQLException {
+  public void shouldNotPrintLog() throws SQLException {
     st.getResultSet();
     st.close();
     verify(log, times(0)).debug(anyString());

@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.cursor.defaults;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.resultset.DefaultResultSetHandler;
 import org.apache.ibatis.executor.resultset.ResultSetWrapper;
@@ -28,8 +23,14 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
- * This is the default implementation of a MyBatis Cursor. This implementation is not thread safe.
+ * This is the default implementation of a MyBatis Cursor.
+ * This implementation is not thread safe.
  *
  * @author Guillaume Darmont / guillaume@dropinocean.com
  */
@@ -40,7 +41,7 @@ public class DefaultCursor<T> implements Cursor<T> {
   private final ResultMap resultMap;
   private final ResultSetWrapper rsw;
   private final RowBounds rowBounds;
-  protected final ObjectWrapperResultHandler<T> objectWrapperResultHandler = new ObjectWrapperResultHandler<>();
+  private final ObjectWrapperResultHandler<T> objectWrapperResultHandler = new ObjectWrapperResultHandler<>();
 
   private final CursorIterator cursorIterator = new CursorIterator();
   private boolean iteratorRetrieved;
@@ -51,25 +52,24 @@ public class DefaultCursor<T> implements Cursor<T> {
   private enum CursorStatus {
 
     /**
-     * A freshly created cursor, database ResultSet consuming has not started.
+     * A freshly created cursor, database ResultSet consuming has not started
      */
     CREATED,
     /**
-     * A cursor currently in use, database ResultSet consuming has started.
+     * A cursor currently in use, database ResultSet consuming has started
      */
     OPEN,
     /**
-     * A closed cursor, not fully consumed.
+     * A closed cursor, not fully consumed
      */
     CLOSED,
     /**
-     * A fully consumed cursor, a consumed cursor is always closed.
+     * A fully consumed cursor, a consumed cursor is always closed
      */
     CONSUMED
   }
 
-  public DefaultCursor(DefaultResultSetHandler resultSetHandler, ResultMap resultMap, ResultSetWrapper rsw,
-      RowBounds rowBounds) {
+  public DefaultCursor(DefaultResultSetHandler resultSetHandler, ResultMap resultMap, ResultSetWrapper rsw, RowBounds rowBounds) {
     this.resultSetHandler = resultSetHandler;
     this.resultMap = resultMap;
     this.rsw = rsw;
@@ -123,7 +123,7 @@ public class DefaultCursor<T> implements Cursor<T> {
 
   protected T fetchNextUsingRowBound() {
     T result = fetchNextObjectFromDatabase();
-    while (objectWrapperResultHandler.fetched && indexWithRowBound < rowBounds.getOffset()) {
+    while (result != null && indexWithRowBound < rowBounds.getOffset()) {
       result = fetchNextObjectFromDatabase();
     }
     return result;
@@ -135,7 +135,6 @@ public class DefaultCursor<T> implements Cursor<T> {
     }
 
     try {
-      objectWrapperResultHandler.fetched = false;
       status = CursorStatus.OPEN;
       if (!rsw.getResultSet().isClosed()) {
         resultSetHandler.handleRowValues(rsw, resultMap, objectWrapperResultHandler, RowBounds.DEFAULT, null);
@@ -145,11 +144,11 @@ public class DefaultCursor<T> implements Cursor<T> {
     }
 
     T next = objectWrapperResultHandler.result;
-    if (objectWrapperResultHandler.fetched) {
+    if (next != null) {
       indexWithRowBound++;
     }
     // No more object or limit reached
-    if (!objectWrapperResultHandler.fetched || getReadItemsCount() == rowBounds.getOffset() + rowBounds.getLimit()) {
+    if (next == null || getReadItemsCount() == rowBounds.getOffset() + rowBounds.getLimit()) {
       close();
       status = CursorStatus.CONSUMED;
     }
@@ -166,23 +165,21 @@ public class DefaultCursor<T> implements Cursor<T> {
     return indexWithRowBound + 1;
   }
 
-  protected static class ObjectWrapperResultHandler<T> implements ResultHandler<T> {
+  private static class ObjectWrapperResultHandler<T> implements ResultHandler<T> {
 
-    protected T result;
-    protected boolean fetched;
+    private T result;
 
     @Override
     public void handleResult(ResultContext<? extends T> context) {
       this.result = context.getResultObject();
       context.stop();
-      fetched = true;
     }
   }
 
-  protected class CursorIterator implements Iterator<T> {
+  private class CursorIterator implements Iterator<T> {
 
     /**
-     * Holder for the next object to be returned.
+     * Holder for the next object to be returned
      */
     T object;
 
@@ -193,10 +190,10 @@ public class DefaultCursor<T> implements Cursor<T> {
 
     @Override
     public boolean hasNext() {
-      if (!objectWrapperResultHandler.fetched) {
+      if (object == null) {
         object = fetchNextUsingRowBound();
       }
-      return objectWrapperResultHandler.fetched;
+      return object != null;
     }
 
     @Override
@@ -204,12 +201,11 @@ public class DefaultCursor<T> implements Cursor<T> {
       // Fill next with object fetched from hasNext()
       T next = object;
 
-      if (!objectWrapperResultHandler.fetched) {
+      if (next == null) {
         next = fetchNextUsingRowBound();
       }
 
-      if (objectWrapperResultHandler.fetched) {
-        objectWrapperResultHandler.fetched = false;
+      if (next != null) {
         object = null;
         iteratorIndex++;
         return next;

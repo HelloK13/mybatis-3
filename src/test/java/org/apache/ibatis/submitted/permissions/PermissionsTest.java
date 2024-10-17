@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,12 +27,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class PermissionsTest {
+public class PermissionsTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/permissions/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -40,11 +40,11 @@ class PermissionsTest {
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/permissions/CreateDB.sql");
+            "org/apache/ibatis/submitted/permissions/CreateDB.sql");
   }
 
   @Test // see issue #168
-  void checkNestedResultMapLoop() {
+  public void checkNestedResultMapLoop() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       final PermissionsMapper mapper = sqlSession.getMapper(PermissionsMapper.class);
 
@@ -67,7 +67,7 @@ class PermissionsTest {
   }
 
   @Test
-  void checkNestedSelectLoop() {
+  public void checkNestedSelectLoop() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       final PermissionsMapper mapper = sqlSession.getMapper(PermissionsMapper.class);
 

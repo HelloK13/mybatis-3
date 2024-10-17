@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,12 +28,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class AutomappingTest {
+public class AutomappingTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/automapping/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
@@ -41,11 +41,11 @@ class AutomappingTest {
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/automapping/CreateDB.sql");
+            "org/apache/ibatis/submitted/automapping/CreateDB.sql");
   }
 
   @Test
-  void shouldGetAUser() {
+  public void shouldGetAUser() {
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.NONE);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -55,7 +55,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldGetAUserWhithPhoneNumber() {
+  public void shouldGetAUserWhithPhoneNumber() {
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.NONE);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -66,7 +66,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldNotInheritAutoMappingInherited_InlineNestedResultMap() {
+  public void shouldNotInheritAutoMappingInherited_InlineNestedResultMap() {
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.NONE);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -79,7 +79,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldNotInheritAutoMappingInherited_ExternalNestedResultMap() {
+  public void shouldNotInheritAutoMappingInherited_ExternalNestedResultMap() {
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.NONE);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -92,7 +92,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldIgnorePartialAutoMappingBehavior_InlineNestedResultMap() {
+  public void shouldIgnorePartialAutoMappingBehavior_InlineNestedResultMap() {
     // For nested resultMaps, PARTIAL works the same as NONE
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
@@ -106,7 +106,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldRespectFullAutoMappingBehavior_InlineNestedResultMap() {
+  public void shouldRespectFullAutoMappingBehavior_InlineNestedResultMap() {
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.FULL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -119,7 +119,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldIgnorePartialAutoMappingBehavior_ExternalNestedResultMap() {
+  public void shouldIgnorePartialAutoMappingBehavior_ExternalNestedResultMap() {
     // For nested resultMaps, PARTIAL works the same as NONE
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
@@ -133,7 +133,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldRespectFullAutoMappingBehavior_ExternalNestedResultMap() {
+  public void shouldRespectFullAutoMappingBehavior_ExternalNestedResultMap() {
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.FULL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -146,7 +146,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldGetBooks() {
+  public void shouldGetBooks() {
     // set automapping to default partial
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
@@ -158,7 +158,7 @@ class AutomappingTest {
   }
 
   @Test
-  void shouldUpdateFinalField() {
+  public void shouldUpdateFinalField() {
     // set automapping to default partial
     sqlSessionFactory.getConfiguration().setAutoMappingBehavior(AutoMappingBehavior.PARTIAL);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {

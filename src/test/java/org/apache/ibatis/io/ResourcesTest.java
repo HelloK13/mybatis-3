@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,31 +31,31 @@ import org.apache.ibatis.BaseDataTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ResourcesTest extends BaseDataTest {
+public class ResourcesTest extends BaseDataTest {
 
   private static final ClassLoader CLASS_LOADER = ResourcesTest.class.getClassLoader();
 
   @Test
-  void shouldGetUrlForResource() throws Exception {
+  public void shouldGetUrlForResource() throws Exception {
     URL url = Resources.getResourceURL(JPETSTORE_PROPERTIES);
     assertTrue(url.toString().endsWith("jpetstore/jpetstore-hsqldb.properties"));
   }
 
   @Test
-  void shouldGetUrlAsProperties() throws Exception {
+  public void shouldGetUrlAsProperties() throws Exception {
     URL url = Resources.getResourceURL(CLASS_LOADER, JPETSTORE_PROPERTIES);
     Properties props = Resources.getUrlAsProperties(url.toString());
     assertNotNull(props.getProperty("driver"));
   }
 
   @Test
-  void shouldGetResourceAsProperties() throws Exception {
+  public void shouldGetResourceAsProperties() throws Exception {
     Properties props = Resources.getResourceAsProperties(CLASS_LOADER, JPETSTORE_PROPERTIES);
     assertNotNull(props.getProperty("driver"));
   }
 
   @Test
-  void shouldGetUrlAsStream() throws Exception {
+  public void shouldGetUrlAsStream() throws Exception {
     URL url = Resources.getResourceURL(CLASS_LOADER, JPETSTORE_PROPERTIES);
     try (InputStream in = Resources.getUrlAsStream(url.toString())) {
       assertNotNull(in);
@@ -63,7 +63,7 @@ class ResourcesTest extends BaseDataTest {
   }
 
   @Test
-  void shouldGetUrlAsReader() throws Exception {
+  public void shouldGetUrlAsReader() throws Exception {
     URL url = Resources.getResourceURL(CLASS_LOADER, JPETSTORE_PROPERTIES);
     try (Reader in = Resources.getUrlAsReader(url.toString())) {
       assertNotNull(in);
@@ -71,69 +71,70 @@ class ResourcesTest extends BaseDataTest {
   }
 
   @Test
-  void shouldGetResourceAsStream() throws Exception {
+  public void shouldGetResourceAsStream() throws Exception {
     try (InputStream in = Resources.getResourceAsStream(CLASS_LOADER, JPETSTORE_PROPERTIES)) {
       assertNotNull(in);
     }
   }
 
   @Test
-  void shouldGetResourceAsReader() throws Exception {
-    try (Reader in = Resources.getResourceAsReader(CLASS_LOADER, JPETSTORE_PROPERTIES)) {
+  public void shouldGetResourceAsReader() throws Exception {
+    try(Reader in = Resources.getResourceAsReader(CLASS_LOADER, JPETSTORE_PROPERTIES)) {
       assertNotNull(in);
     }
   }
 
   @Test
-  void shouldGetResourceAsFile() throws Exception {
+  public void shouldGetResourceAsFile() throws Exception {
     File file = Resources.getResourceAsFile(JPETSTORE_PROPERTIES);
     assertTrue(file.getAbsolutePath().replace('\\', '/').endsWith("jpetstore/jpetstore-hsqldb.properties"));
   }
 
   @Test
-  void shouldGetResourceAsFileWithClassloader() throws Exception {
+  public void shouldGetResourceAsFileWithClassloader() throws Exception {
     File file = Resources.getResourceAsFile(CLASS_LOADER, JPETSTORE_PROPERTIES);
     assertTrue(file.getAbsolutePath().replace('\\', '/').endsWith("jpetstore/jpetstore-hsqldb.properties"));
   }
 
   @Test
-  void shouldGetResourceAsPropertiesWithOutClassloader() throws Exception {
+  public void shouldGetResourceAsPropertiesWithOutClassloader() throws Exception {
     Properties file = Resources.getResourceAsProperties(JPETSTORE_PROPERTIES);
     assertNotNull(file);
   }
 
   @Test
-  void shouldGetResourceAsPropertiesWithClassloader() throws Exception {
+  public void shouldGetResourceAsPropertiesWithClassloader() throws Exception {
     Properties file = Resources.getResourceAsProperties(CLASS_LOADER, JPETSTORE_PROPERTIES);
     assertNotNull(file);
   }
 
   @Test
-  void shouldAllowDefaultClassLoaderToBeSet() {
+  public void shouldAllowDefaultClassLoaderToBeSet() {
     Resources.setDefaultClassLoader(this.getClass().getClassLoader());
     assertEquals(this.getClass().getClassLoader(), Resources.getDefaultClassLoader());
   }
 
   @Test
-  void shouldAllowDefaultCharsetToBeSet() {
+  public void shouldAllowDefaultCharsetToBeSet() {
     Resources.setCharset(Charset.defaultCharset());
     assertEquals(Charset.defaultCharset(), Resources.getCharset());
   }
 
   @Test
-  void shouldGetClassForName() throws Exception {
+  public void shouldGetClassForName() throws Exception {
     Class<?> clazz = Resources.classForName(ResourcesTest.class.getName());
     assertNotNull(clazz);
   }
 
   @Test
-  void shouldNotFindThisClass() {
-    Assertions.assertThrows(ClassNotFoundException.class,
-        () -> Resources.classForName("some.random.class.that.does.not.Exist"));
+  public void shouldNotFindThisClass() throws ClassNotFoundException {
+    Assertions.assertThrows(ClassNotFoundException.class, () -> {
+      Resources.classForName("some.random.class.that.does.not.Exist");
+    });
   }
 
   @Test
-  void shouldGetReader() throws IOException {
+  public void shouldGetReader() throws IOException {
 
     // save the value
     Charset charset = Resources.getCharset();
@@ -152,7 +153,7 @@ class ResourcesTest extends BaseDataTest {
   }
 
   @Test
-  void shouldGetReaderWithClassLoader() throws IOException {
+  public void shouldGetReaderWithClassLoader() throws IOException {
 
     // save the value
     Charset charset = Resources.getCharset();
@@ -170,4 +171,8 @@ class ResourcesTest extends BaseDataTest {
 
   }
 
+  @Test
+  public void stupidJustForCoverage() {
+    assertNotNull(new Resources());
+  }
 }

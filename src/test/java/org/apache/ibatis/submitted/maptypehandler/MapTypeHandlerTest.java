@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,26 +31,26 @@ import org.junit.jupiter.api.Test;
 
 /**
  * See issue #135
+ *
  */
-class MapTypeHandlerTest {
+public class MapTypeHandlerTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     // create an SqlSessionFactory
-    try (Reader reader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/maptypehandler/mybatis-config.xml")) {
+    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/maptypehandler/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/maptypehandler/CreateDB.sql");
+            "org/apache/ibatis/submitted/maptypehandler/CreateDB.sql");
   }
 
   @Test
-  void shouldGetAUserFromAnnotation() {
+  public void shouldGetAUserFromAnnotation() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUser(1, "User1");
@@ -59,13 +59,15 @@ class MapTypeHandlerTest {
   }
 
   @Test
-  void shouldGetAUserFromXML() {
+  public void shouldGetAUserFromXML() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       Map<String, Object> params = new HashMap<>();
       params.put("id", 1);
       params.put("name", "User1");
-      Assertions.assertThrows(PersistenceException.class, () -> mapper.getUserXML(params));
+      Assertions.assertThrows(PersistenceException.class, () -> {
+        mapper.getUserXML(params);
+      });
     }
   }
 

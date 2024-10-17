@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,29 +28,29 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BaseJdbcLoggerTest {
+public class BaseJdbcLoggerTest {
 
   @Mock
   Log log;
   @Mock
   Array array;
-  private BaseJdbcLogger logger;
+  BaseJdbcLogger logger;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() throws Exception {
     logger = new BaseJdbcLogger(log, 1) {
     };
   }
 
   @Test
-  void shouldDescribePrimitiveArrayParameter() throws Exception {
+  public void shouldDescribePrimitiveArrayParameter() throws Exception {
     logger.setColumn("1", array);
     when(array.getArray()).thenReturn(new int[] { 1, 2, 3 });
     assertThat(logger.getParameterValueString()).startsWith("[1, 2, 3]");
   }
 
   @Test
-  void shouldDescribeObjectArrayParameter() throws Exception {
+  public void shouldDescribeObjectArrayParameter() throws Exception {
     logger.setColumn("1", array);
     when(array.getArray()).thenReturn(new String[] { "one", "two", "three" });
     assertThat(logger.getParameterValueString()).startsWith("[one, two, three]");

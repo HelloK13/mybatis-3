@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,7 @@
  */
 package org.apache.ibatis.submitted.lazy_properties;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.util.Collections;
@@ -32,15 +31,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class LazyPropertiesTest {
+public class LazyPropertiesTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeEach
-  void setUp() throws Exception {
+  public void setUp() throws Exception {
     // create an SqlSessionFactory
     try (Reader reader = Resources
         .getResourceAsReader("org/apache/ibatis/submitted/lazy_properties/mybatis-config.xml")) {
@@ -49,11 +47,11 @@ class LazyPropertiesTest {
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/lazy_properties/CreateDB.sql");
+            "org/apache/ibatis/submitted/lazy_properties/CreateDB.sql");
   }
 
   @Test
-  void shouldLoadOnlyTheInvokedLazyProperty() {
+  public void shouldLoadOnlyTheInvokedLazyProperty() {
     sqlSessionFactory.getConfiguration().setAggressiveLazyLoading(false);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -65,7 +63,7 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void verifyAggressiveLazyLoadingBehavior() {
+  public void verifyAggressiveLazyLoadingBehavior() {
     sqlSessionFactory.getConfiguration().setAggressiveLazyLoading(true);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -76,7 +74,7 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void shouldToStringTriggerLazyLoading() {
+  public void shouldToStringTriggerLazyLoading() {
     sqlSessionFactory.getConfiguration().setAggressiveLazyLoading(false);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -87,7 +85,7 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void shouldHashCodeTriggerLazyLoading() {
+  public void shouldHashCodeTriggerLazyLoading() {
     sqlSessionFactory.getConfiguration().setAggressiveLazyLoading(false);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -98,7 +96,7 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void shouldEqualsTriggerLazyLoading() {
+  public void shouldEqualsTriggerLazyLoading() {
     sqlSessionFactory.getConfiguration().setAggressiveLazyLoading(false);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -109,7 +107,7 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void shouldCloneTriggerLazyLoading() {
+  public void shouldCloneTriggerLazyLoading() {
     sqlSessionFactory.getConfiguration().setAggressiveLazyLoading(false);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -120,7 +118,7 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void verifyEmptyLazyLoadTriggerMethods() {
+  public void verifyEmptyLazyLoadTriggerMethods() {
     Configuration configuration = sqlSessionFactory.getConfiguration();
     configuration.setAggressiveLazyLoading(false);
     configuration.setLazyLoadTriggerMethods(new HashSet<>());
@@ -136,10 +134,11 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void verifyCustomLazyLoadTriggerMethods() {
+  public void verifyCustomLazyLoadTriggerMethods() {
     Configuration configuration = sqlSessionFactory.getConfiguration();
     configuration.setAggressiveLazyLoading(false);
-    configuration.setLazyLoadTriggerMethods(new HashSet<>(Collections.singleton("trigger")));
+    configuration
+        .setLazyLoadTriggerMethods(new HashSet<>(Collections.singleton("trigger")));
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = mapper.getUser(1);
@@ -154,13 +153,12 @@ class LazyPropertiesTest {
   }
 
   @Test
-  void shouldInvokingSetterInvalidateLazyLoading_Javassist() {
+  public void shouldInvokingSetterInvalidateLazyLoading_Javassist() {
     shoulInvokingSetterInvalidateLazyLoading(new JavassistProxyFactory());
   }
 
-  @Tag("RequireIllegalAccess")
   @Test
-  void shouldInvokingSetterInvalidateLazyLoading_Cglib() {
+  public void shouldInvokingSetterInvalidateLazyLoading_Cglib() {
     shoulInvokingSetterInvalidateLazyLoading(new CglibProxyFactory());
   }
 

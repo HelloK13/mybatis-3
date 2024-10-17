@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,18 @@
  */
 package org.apache.ibatis.jdbc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.apache.ibatis.BaseDataTest;
+import org.apache.ibatis.datasource.pooled.PooledDataSource;
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
+import org.apache.ibatis.io.Resources;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -36,23 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
+public class ScriptRunnerTest extends BaseDataTest {
 
-import org.apache.ibatis.BaseDataTest;
-import org.apache.ibatis.datasource.pooled.PooledDataSource;
-import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
-import org.apache.ibatis.io.Resources;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-class ScriptRunnerTest extends BaseDataTest {
-
-  private static final String LINE_SEPARATOR = System.lineSeparator();
+  private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
   @Test
   @Disabled("This fails with HSQLDB 2.0 due to the create index statements in the schema script")
-  void shouldRunScriptsBySendingFullScriptAtOnce() throws Exception {
+  public void shouldRunScriptsBySendingFullScriptAtOnce() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     Connection conn = ds.getConnection();
     ScriptRunner runner = new ScriptRunner(conn);
@@ -67,7 +60,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldRunScriptsUsingConnection() throws Exception {
+  public void shouldRunScriptsUsingConnection() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection conn = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(conn);
@@ -81,10 +74,13 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldRunScriptsUsingProperties() throws Exception {
+  public void shouldRunScriptsUsingProperties() throws Exception {
     Properties props = Resources.getResourceAsProperties(JPETSTORE_PROPERTIES);
-    DataSource dataSource = new UnpooledDataSource(props.getProperty("driver"), props.getProperty("url"),
-        props.getProperty("username"), props.getProperty("password"));
+    DataSource dataSource = new UnpooledDataSource(
+        props.getProperty("driver"),
+        props.getProperty("url"),
+        props.getProperty("username"),
+        props.getProperty("password"));
     ScriptRunner runner = new ScriptRunner(dataSource.getConnection());
     runner.setAutoCommit(true);
     runner.setStopOnError(false);
@@ -95,10 +91,11 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldReturnWarningIfEndOfLineTerminatorNotFound() throws Exception {
+  public void shouldReturnWarningIfEndOfLineTerminatorNotFound() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptMissingEOLTerminator.sql";
-    try (Connection conn = ds.getConnection(); Reader reader = Resources.getResourceAsReader(resource)) {
+    try (Connection conn = ds.getConnection();
+         Reader reader = Resources.getResourceAsReader(resource)) {
       ScriptRunner runner = new ScriptRunner(conn);
       runner.setAutoCommit(true);
       runner.setStopOnError(false);
@@ -115,10 +112,11 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void commentAferStatementDelimiterShouldNotCauseRunnerFail() throws Exception {
+  public void commentAferStatementDelimiterShouldNotCauseRunnerFail() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptCommentAfterEOLTerminator.sql";
-    try (Connection conn = ds.getConnection(); Reader reader = Resources.getResourceAsReader(resource)) {
+    try (Connection conn = ds.getConnection();
+         Reader reader = Resources.getResourceAsReader(resource)) {
       ScriptRunner runner = new ScriptRunner(conn);
       runner.setAutoCommit(true);
       runner.setStopOnError(true);
@@ -130,10 +128,11 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldReturnWarningIfNotTheCurrentDelimiterUsed() throws Exception {
+  public void shouldReturnWarningIfNotTheCurrentDelimiterUsed() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptChangingDelimiterMissingDelimiter.sql";
-    try (Connection conn = ds.getConnection(); Reader reader = Resources.getResourceAsReader(resource)) {
+    try (Connection conn = ds.getConnection();
+         Reader reader = Resources.getResourceAsReader(resource)) {
       ScriptRunner runner = new ScriptRunner(conn);
       runner.setAutoCommit(false);
       runner.setStopOnError(true);
@@ -149,10 +148,11 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void changingDelimiterShouldNotCauseRunnerFail() throws Exception {
+  public void changingDelimiterShouldNotCauseRunnerFail() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     String resource = "org/apache/ibatis/jdbc/ScriptChangingDelimiter.sql";
-    try (Connection conn = ds.getConnection(); Reader reader = Resources.getResourceAsReader(resource)) {
+    try (Connection conn = ds.getConnection();
+         Reader reader = Resources.getResourceAsReader(resource)) {
       ScriptRunner runner = new ScriptRunner(conn);
       runner.setAutoCommit(false);
       runner.setStopOnError(true);
@@ -164,7 +164,7 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void testLogging() throws Exception {
+  public void testLogging() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection conn = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(conn);
@@ -179,13 +179,15 @@ class ScriptRunnerTest extends BaseDataTest {
       Reader reader = new StringReader("select userid from account where userid = 'j2ee';");
       runner.runScript(reader);
 
-      assertEquals("select userid from account where userid = 'j2ee'" + LINE_SEPARATOR + LINE_SEPARATOR + "USERID\t"
-          + LINE_SEPARATOR + "j2ee\t" + LINE_SEPARATOR, sw.toString());
+      assertEquals(
+              "select userid from account where userid = 'j2ee'" + LINE_SEPARATOR
+                      + LINE_SEPARATOR + "USERID\t" + LINE_SEPARATOR
+                      + "j2ee\t" + LINE_SEPARATOR, sw.toString());
     }
   }
 
   @Test
-  void testLoggingFullScipt() throws Exception {
+  public void testLoggingFullScipt() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection conn = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(conn);
@@ -200,8 +202,10 @@ class ScriptRunnerTest extends BaseDataTest {
       Reader reader = new StringReader("select userid from account where userid = 'j2ee';");
       runner.runScript(reader);
 
-      assertEquals("select userid from account where userid = 'j2ee';" + LINE_SEPARATOR + LINE_SEPARATOR + "USERID\t"
-          + LINE_SEPARATOR + "j2ee\t" + LINE_SEPARATOR, sw.toString());
+      assertEquals(
+              "select userid from account where userid = 'j2ee';" + LINE_SEPARATOR
+                      + LINE_SEPARATOR + "USERID\t" + LINE_SEPARATOR
+                      + "j2ee\t" + LINE_SEPARATOR, sw.toString());
     }
   }
 
@@ -222,30 +226,37 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldAcceptDelimiterVariations() throws Exception {
+  public void shouldAcceptDelimiterVariations() throws Exception {
     Connection conn = mock(Connection.class);
     Statement stmt = mock(Statement.class);
     when(conn.createStatement()).thenReturn(stmt);
     when(stmt.getUpdateCount()).thenReturn(-1);
     ScriptRunner runner = new ScriptRunner(conn);
 
-    String sql = "-- @DELIMITER | \n" + "line 1;\n" + "line 2;\n" + "|\n" + "//  @DELIMITER  ;\n" + "line 3; \n"
-        + "-- //@deLimiTer $  blah\n" + "line 4$\n" + "// //@DELIMITER %\n" + "line 5%\n";
+    String sql = "-- @DELIMITER | \n"
+        + "line 1;\n"
+        + "line 2;\n"
+        + "|\n"
+        + "//  @DELIMITER  ;\n"
+        + "line 3; \n"
+        + "-- //@deLimiTer $  blah\n"
+        + "line 4$\n"
+        + "// //@DELIMITER %\n"
+        + "line 5%\n";
     Reader reader = new StringReader(sql);
     runner.runScript(reader);
 
-    verify(stmt, Mockito.times(1))
-        .execute(eq("line 1;" + LINE_SEPARATOR + "line 2;" + LINE_SEPARATOR + LINE_SEPARATOR));
+    verify(stmt, Mockito.times(1)).execute(eq("line 1;" + LINE_SEPARATOR + "line 2;" + LINE_SEPARATOR + LINE_SEPARATOR));
     verify(stmt, Mockito.times(1)).execute(eq("line 3" + LINE_SEPARATOR));
     verify(stmt, Mockito.times(1)).execute(eq("line 4" + LINE_SEPARATOR));
     verify(stmt, Mockito.times(1)).execute(eq("line 5" + LINE_SEPARATOR));
   }
 
   @Test
-  void test() {
+  public void test() throws Exception {
     StringBuilder sb = new StringBuilder();
     StringBuilder sb2 = y(sb);
-    assertSame(sb, sb2);
+    assertTrue(sb == sb2);
   }
 
   private StringBuilder y(StringBuilder sb) {
@@ -254,19 +265,23 @@ class ScriptRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldAcceptMultiCharDelimiter() throws Exception {
+  public void shouldAcceptMultiCharDelimiter() throws Exception {
     Connection conn = mock(Connection.class);
     Statement stmt = mock(Statement.class);
     when(conn.createStatement()).thenReturn(stmt);
     when(stmt.getUpdateCount()).thenReturn(-1);
     ScriptRunner runner = new ScriptRunner(conn);
 
-    String sql = "-- @DELIMITER || \n" + "line 1;\n" + "line 2;\n" + "||\n" + "//  @DELIMITER  ;\n" + "line 3; \n";
+    String sql = "-- @DELIMITER || \n"
+        + "line 1;\n"
+        + "line 2;\n"
+        + "||\n"
+        + "//  @DELIMITER  ;\n"
+        + "line 3; \n";
     Reader reader = new StringReader(sql);
     runner.runScript(reader);
 
-    verify(stmt, Mockito.times(1))
-        .execute(eq("line 1;" + LINE_SEPARATOR + "line 2;" + LINE_SEPARATOR + LINE_SEPARATOR));
+    verify(stmt, Mockito.times(1)).execute(eq("line 1;" + LINE_SEPARATOR + "line 2;" + LINE_SEPARATOR + LINE_SEPARATOR));
     verify(stmt, Mockito.times(1)).execute(eq("line 3" + LINE_SEPARATOR));
   }
 }

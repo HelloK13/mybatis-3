@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,10 +27,10 @@ import javax.sql.DataSource;
 import org.apache.ibatis.BaseDataTest;
 import org.junit.jupiter.api.Test;
 
-class SqlRunnerTest extends BaseDataTest {
+public class SqlRunnerTest extends BaseDataTest {
 
   @Test
-  void shouldSelectOne() throws Exception {
+  public void shouldSelectOne() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     runScript(ds, JPETSTORE_DDL);
     runScript(ds, JPETSTORE_DATA);
@@ -42,7 +42,7 @@ class SqlRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectList() throws Exception {
+  public void shouldSelectList() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     runScript(ds, JPETSTORE_DDL);
     runScript(ds, JPETSTORE_DATA);
@@ -54,14 +54,13 @@ class SqlRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldInsert() throws Exception {
+  public void shouldInsert() throws Exception {
     DataSource ds = createUnpooledDataSource(BLOG_PROPERTIES);
     runScript(ds, BLOG_DDL);
     try (Connection connection = ds.getConnection()) {
       SqlRunner exec = new SqlRunner(connection);
       exec.setUseGeneratedKeySupport(true);
-      int id = exec.insert("INSERT INTO author (username, password, email, bio) VALUES (?,?,?,?)", "someone", "******",
-          "someone@apache.org", Null.LONGVARCHAR);
+      int id = exec.insert("INSERT INTO author (username, password, email, bio) VALUES (?,?,?,?)", "someone", "******", "someone@apache.org", Null.LONGVARCHAR);
       Map<String, Object> row = exec.selectOne("SELECT * FROM author WHERE username = ?", "someone");
       connection.rollback();
       assertTrue(SqlRunner.NO_GENERATED_KEY != id);
@@ -70,7 +69,7 @@ class SqlRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldUpdateCategory() throws Exception {
+  public void shouldUpdateCategory() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     runScript(ds, JPETSTORE_DDL);
     runScript(ds, JPETSTORE_DATA);
@@ -84,7 +83,7 @@ class SqlRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldDeleteOne() throws Exception {
+  public void shouldDeleteOne() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     runScript(ds, JPETSTORE_DDL);
     runScript(ds, JPETSTORE_DATA);
@@ -98,7 +97,7 @@ class SqlRunnerTest extends BaseDataTest {
   }
 
   @Test
-  void shouldDemonstrateDDLThroughRunMethod() throws Exception {
+  public void shouldDemonstrateDDLThroughRunMethod() throws Exception {
     DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
     try (Connection connection = ds.getConnection()) {
       SqlRunner exec = new SqlRunner(connection);

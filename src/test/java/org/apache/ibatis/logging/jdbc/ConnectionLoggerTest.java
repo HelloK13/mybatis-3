@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ConnectionLoggerTest {
+public class ConnectionLoggerTest {
 
   @Mock
   Connection connection;
@@ -44,29 +44,29 @@ class ConnectionLoggerTest {
   @Mock
   Log log;
 
-  private Connection conn;
+  Connection conn;
 
   @BeforeEach
-  void setUp() throws SQLException {
+  public void setUp() throws SQLException {
     conn = ConnectionLogger.newInstance(connection, log, 1);
   }
 
   @Test
-  void shouldPrintPrepareStatement() throws SQLException {
+  public void shouldPrintPrepareStatement() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     conn.prepareStatement("select 1");
     verify(log).debug(contains("Preparing: select 1"));
   }
 
   @Test
-  void shouldPrintPrepareCall() throws SQLException {
+  public void shouldPrintPrepareCall() throws SQLException {
     when(log.isDebugEnabled()).thenReturn(true);
     conn.prepareCall("{ call test() }");
     verify(log).debug(contains("Preparing: { call test() }"));
   }
 
   @Test
-  void shouldNotPrintCreateStatement() throws SQLException {
+  public void shouldNotPrintCreateStatement() throws SQLException {
     conn.createStatement();
     conn.close();
     verify(log, times(0)).debug(anyString());

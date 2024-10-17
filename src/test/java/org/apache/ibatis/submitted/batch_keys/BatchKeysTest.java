@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,33 +26,33 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.apache.ibatis.BaseDataTest;
+import org.junit.jupiter.api.Assertions;
+
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class BatchKeysTest {
+public class BatchKeysTest {
 
   private SqlSessionFactory sqlSessionFactory;
 
   @BeforeEach
-  void setUp() throws Exception {
+  public void setUp() throws Exception {
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/batch_keys/Config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/batch_keys/CreateDB.sql");
+            "org/apache/ibatis/submitted/batch_keys/CreateDB.sql");
   }
 
   public void testJdbc3Support() throws Exception {
     try (Connection conn = sqlSessionFactory.getConfiguration().getEnvironment().getDataSource().getConnection();
-        PreparedStatement stmt = conn.prepareStatement("insert into users2 values(null, 'Pocoyo')",
-            Statement.RETURN_GENERATED_KEYS)) {
+         PreparedStatement stmt = conn.prepareStatement("insert into users2 values(null, 'Pocoyo')", Statement.RETURN_GENERATED_KEYS)) {
       stmt.addBatch();
       stmt.executeBatch();
       try (ResultSet rs = stmt.getGeneratedKeys()) {
@@ -73,7 +73,7 @@ class BatchKeysTest {
   }
 
   @Test
-  void testInsert() {
+  public void testInsert() throws Exception {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH)) {
       User user1 = new User(null, "Pocoyo");
       sqlSession.insert("insert", user1);
@@ -86,12 +86,12 @@ class BatchKeysTest {
     }
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<User> users = sqlSession.selectList("select");
-      Assertions.assertEquals(2, users.size());
+      Assertions.assertTrue(users.size() == 2);
     }
   }
 
   @Test
-  void testInsertJdbc3() {
+  public void testInsertJdbc3() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH)) {
       User user1 = new User(null, "Pocoyo");
       sqlSession.insert("insertIdentity", user1);
@@ -105,12 +105,12 @@ class BatchKeysTest {
 
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<User> users = sqlSession.selectList("selectIdentity");
-      Assertions.assertEquals(2, users.size());
+      Assertions.assertTrue(users.size() == 2);
     }
   }
 
   @Test
-  void testInsertWithMapper() {
+  public void testInsertWithMapper() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH)) {
       Mapper userMapper = sqlSession.getMapper(Mapper.class);
       User user1 = new User(null, "Pocoyo");
@@ -125,12 +125,12 @@ class BatchKeysTest {
 
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<User> users = sqlSession.selectList("select");
-      Assertions.assertEquals(2, users.size());
+      Assertions.assertTrue(users.size() == 2);
     }
   }
 
   @Test
-  void testInsertMapperJdbc3() {
+  public void testInsertMapperJdbc3() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH)) {
       Mapper userMapper = sqlSession.getMapper(Mapper.class);
       User user1 = new User(null, "Pocoyo");
@@ -145,12 +145,12 @@ class BatchKeysTest {
 
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<User> users = sqlSession.selectList("selectIdentity");
-      Assertions.assertEquals(2, users.size());
+      Assertions.assertTrue(users.size() == 2);
     }
   }
 
   @Test
-  void testInsertMapperNoBatchJdbc3() {
+  public void testInsertMapperNoBatchJdbc3() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper userMapper = sqlSession.getMapper(Mapper.class);
       User user1 = new User(null, "Pocoyo");
@@ -161,7 +161,7 @@ class BatchKeysTest {
 
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       List<User> users = sqlSession.selectList("selectIdentity");
-      Assertions.assertEquals(1, users.size());
+      Assertions.assertTrue(users.size() == 1);
     }
   }
 

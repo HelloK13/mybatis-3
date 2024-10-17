@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,23 +28,23 @@ import org.apache.ibatis.annotations.Select;
 public interface PersonMapper {
 
   @Insert("insert into person (id, firstname, lastname) values (#{id}, #{firstname}, #{lastname})")
-  void create(Person person);
+  public void create(Person person);
 
   @Insert("insert into person (id, firstname, lastname) values (#{id}, #{firstname}, #{lastname})")
   @Options
-  void createWithOptions(Person person);
+  public void createWithOptions(Person person);
 
   @Insert("insert into person (id, firstname, lastname) values (#{id}, #{firstname}, #{lastname})")
   @Options(flushCache = FlushCachePolicy.FALSE)
-  void createWithoutFlushCache(Person person);
+  public void createWithoutFlushCache(Person person);
 
   @Delete("delete from person where id = #{id}")
-  void delete(int id);
+  public void delete(int id);
 
   @Select("select id, firstname, lastname from person")
-  List<Person> findAll();
+  public List<Person> findAll();
 
   @Select("select id, firstname, lastname from person")
   @Options(flushCache = FlushCachePolicy.TRUE)
-  List<Person> findWithFlushCache();
+  public List<Person> findWithFlushCache();
 }

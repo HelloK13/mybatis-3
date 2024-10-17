@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,10 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
   private SqlSessionManager(SqlSessionFactory sqlSessionFactory) {
     this.sqlSessionFactory = sqlSessionFactory;
-    this.sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(SqlSessionFactory.class.getClassLoader(),
-        new Class[] { SqlSession.class }, new SqlSessionInterceptor());
+    this.sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
+        SqlSessionFactory.class.getClassLoader(),
+        new Class[]{SqlSession.class},
+        new SqlSessionInterceptor());
   }
 
   public static SqlSessionManager newInstance(Reader reader) {
@@ -206,7 +208,7 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
   @Override
   public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
-    return sqlSessionProxy.selectList(statement, parameter, rowBounds);
+    return sqlSessionProxy.<E> selectList(statement, parameter, rowBounds);
   }
 
   @Override
@@ -331,13 +333,13 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
     try {
       sqlSession.close();
     } finally {
-      localSqlSession.remove();
+      localSqlSession.set(null);
     }
   }
 
   private class SqlSessionInterceptor implements InvocationHandler {
     public SqlSessionInterceptor() {
-      // Prevent Synthetic Access
+        // Prevent Synthetic Access
     }
 
     @Override
@@ -349,15 +351,16 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
         } catch (Throwable t) {
           throw ExceptionUtil.unwrapThrowable(t);
         }
-      }
-      try (SqlSession autoSqlSession = openSession()) {
-        try {
-          final Object result = method.invoke(autoSqlSession, args);
-          autoSqlSession.commit();
-          return result;
-        } catch (Throwable t) {
-          autoSqlSession.rollback();
-          throw ExceptionUtil.unwrapThrowable(t);
+      } else {
+        try (SqlSession autoSqlSession = openSession()) {
+          try {
+            final Object result = method.invoke(autoSqlSession, args);
+            autoSqlSession.commit();
+            return result;
+          } catch (Throwable t) {
+            autoSqlSession.rollback();
+            throw ExceptionUtil.unwrapThrowable(t);
+          }
         }
       }
     }

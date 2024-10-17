@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,16 @@
  */
 package org.apache.ibatis.cache;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.apache.ibatis.cache.decorators.LoggingCache;
 import org.apache.ibatis.cache.decorators.ScheduledCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-class ScheduledCacheTest {
+public class ScheduledCacheTest {
 
   @Test
-  void shouldDemonstrateHowAllObjectsAreFlushedAfterBasedOnTime() throws Exception {
+  public void shouldDemonstrateHowAllObjectsAreFlushedAfterBasedOnTime() throws Exception {
     Cache cache = new PerpetualCache("DefaultCache");
     cache = new ScheduledCache(cache);
     ((ScheduledCache) cache).setClearInterval(2500);
@@ -41,7 +38,7 @@ class ScheduledCacheTest {
   }
 
   @Test
-  void shouldRemoveItemOnDemand() {
+  public void shouldRemoveItemOnDemand() {
     Cache cache = new PerpetualCache("DefaultCache");
     cache = new ScheduledCache(cache);
     ((ScheduledCache) cache).setClearInterval(60000);
@@ -53,7 +50,7 @@ class ScheduledCacheTest {
   }
 
   @Test
-  void shouldFlushAllItemsOnDemand() {
+  public void shouldFlushAllItemsOnDemand() {
     Cache cache = new PerpetualCache("DefaultCache");
     cache = new ScheduledCache(cache);
     ((ScheduledCache) cache).setClearInterval(60000);

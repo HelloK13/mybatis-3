@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,32 +15,31 @@
  */
 package org.apache.ibatis.type;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
-class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
+public class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
 
   private static final TypeHandler<LocalDate> TYPE_HANDLER = new LocalDateTypeHandler();
   private static final LocalDate LOCAL_DATE = LocalDate.now();
+  private static final Date DATE = Date.valueOf(LOCAL_DATE);
 
   @Override
   @Test
   public void shouldSetParameter() throws Exception {
     TYPE_HANDLER.setParameter(ps, 1, LOCAL_DATE, null);
-    verify(ps).setObject(1, LOCAL_DATE);
+    verify(ps).setDate(1, DATE);
   }
 
   @Override
   @Test
   public void shouldGetResultFromResultSetByName() throws Exception {
-    when(rs.getObject("column", LocalDate.class)).thenReturn(LOCAL_DATE);
+    when(rs.getDate("column")).thenReturn(DATE);
     assertEquals(LOCAL_DATE, TYPE_HANDLER.getResult(rs, "column"));
     verify(rs, never()).wasNull();
   }
@@ -48,7 +47,7 @@ class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultNullFromResultSetByName() throws Exception {
-    when(rs.getObject("column", LocalDate.class)).thenReturn(null);
+    when(rs.getDate("column")).thenReturn(null);
     assertNull(TYPE_HANDLER.getResult(rs, "column"));
     verify(rs, never()).wasNull();
   }
@@ -56,7 +55,7 @@ class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultFromResultSetByPosition() throws Exception {
-    when(rs.getObject(1, LocalDate.class)).thenReturn(LOCAL_DATE);
+    when(rs.getDate(1)).thenReturn(DATE);
     assertEquals(LOCAL_DATE, TYPE_HANDLER.getResult(rs, 1));
     verify(rs, never()).wasNull();
   }
@@ -64,7 +63,7 @@ class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultNullFromResultSetByPosition() throws Exception {
-    when(rs.getObject(1, LocalDate.class)).thenReturn(null);
+    when(rs.getDate(1)).thenReturn(null);
     assertNull(TYPE_HANDLER.getResult(rs, 1));
     verify(rs, never()).wasNull();
   }
@@ -72,7 +71,7 @@ class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultFromCallableStatement() throws Exception {
-    when(cs.getObject(1, LocalDate.class)).thenReturn(LOCAL_DATE);
+    when(cs.getDate(1)).thenReturn(DATE);
     assertEquals(LOCAL_DATE, TYPE_HANDLER.getResult(cs, 1));
     verify(cs, never()).wasNull();
   }
@@ -80,7 +79,7 @@ class LocalDateTypeHandlerTest extends BaseTypeHandlerTest {
   @Override
   @Test
   public void shouldGetResultNullFromCallableStatement() throws Exception {
-    when(cs.getObject(1, LocalDate.class)).thenReturn(null);
+    when(cs.getDate(1)).thenReturn(null);
     assertNull(TYPE_HANDLER.getResult(cs, 1));
     verify(cs, never()).wasNull();
   }

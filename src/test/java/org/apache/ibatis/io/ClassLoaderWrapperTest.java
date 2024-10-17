@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,70 +15,72 @@
  */
 package org.apache.ibatis.io;
 
+import org.apache.ibatis.BaseDataTest;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.apache.ibatis.BaseDataTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ClassLoaderWrapperTest extends BaseDataTest {
+public class ClassLoaderWrapperTest extends BaseDataTest {
 
-  private ClassLoaderWrapper wrapper;
-  private ClassLoader loader;
+  ClassLoaderWrapper wrapper;
+  ClassLoader loader;
   private final String RESOURCE_NOT_FOUND = "some_resource_that_does_not_exist.properties";
   private final String CLASS_NOT_FOUND = "some.random.class.that.does.not.Exist";
   private final String CLASS_FOUND = "java.lang.Object";
 
   @BeforeEach
-  void beforeClassLoaderWrapperTest() {
+  public void beforeClassLoaderWrapperTest() {
     wrapper = new ClassLoaderWrapper();
     loader = getClass().getClassLoader();
   }
 
   @Test
-  void classForName() throws ClassNotFoundException {
+  public void classForName() throws ClassNotFoundException {
     assertNotNull(wrapper.classForName(CLASS_FOUND));
   }
 
   @Test
-  void classForNameNotFound() {
-    Assertions.assertThrows(ClassNotFoundException.class, () -> assertNotNull(wrapper.classForName(CLASS_NOT_FOUND)));
+  public void classForNameNotFound() throws ClassNotFoundException {
+    Assertions.assertThrows(ClassNotFoundException.class, () -> {
+      assertNotNull(wrapper.classForName(CLASS_NOT_FOUND));
+    });
   }
 
   @Test
-  void classForNameWithClassLoader() throws ClassNotFoundException {
+  public void classForNameWithClassLoader() throws ClassNotFoundException {
     assertNotNull(wrapper.classForName(CLASS_FOUND, loader));
   }
 
   @Test
-  void getResourceAsURL() {
+  public void getResourceAsURL() {
     assertNotNull(wrapper.getResourceAsURL(JPETSTORE_PROPERTIES));
   }
 
   @Test
-  void getResourceAsURLNotFound() {
+  public void getResourceAsURLNotFound() {
     assertNull(wrapper.getResourceAsURL(RESOURCE_NOT_FOUND));
   }
 
   @Test
-  void getResourceAsURLWithClassLoader() {
+  public void getResourceAsURLWithClassLoader() {
     assertNotNull(wrapper.getResourceAsURL(JPETSTORE_PROPERTIES, loader));
   }
 
   @Test
-  void getResourceAsStream() {
+  public void getResourceAsStream() {
     assertNotNull(wrapper.getResourceAsStream(JPETSTORE_PROPERTIES));
   }
 
   @Test
-  void getResourceAsStreamNotFound() {
+  public void getResourceAsStreamNotFound() {
     assertNull(wrapper.getResourceAsStream(RESOURCE_NOT_FOUND));
   }
 
   @Test
-  void getResourceAsStreamWithClassLoader() {
+  public void getResourceAsStreamWithClassLoader() {
     assertNotNull(wrapper.getResourceAsStream(JPETSTORE_PROPERTIES, loader));
   }
 

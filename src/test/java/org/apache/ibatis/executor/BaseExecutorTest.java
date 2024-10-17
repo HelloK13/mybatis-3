@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2024 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,45 +29,39 @@ import javassist.util.proxy.Proxy;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.BaseDataTest;
-import org.apache.ibatis.builder.StaticSqlSource;
-import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
 import org.apache.ibatis.domain.blog.Post;
 import org.apache.ibatis.domain.blog.Section;
-import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.jdbc.JdbcTransaction;
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class BaseExecutorTest extends BaseDataTest {
+public class BaseExecutorTest extends BaseDataTest {
   protected final Configuration config;
-  private static DataSource ds;
+  protected static DataSource ds;
 
   @BeforeAll
-  static void setup() throws Exception {
+  public static void setup() throws Exception {
     ds = createBlogDataSource();
   }
 
-  BaseExecutorTest() {
+  public BaseExecutorTest() {
     config = new Configuration();
     config.setLazyLoadingEnabled(true);
     config.setUseGeneratedKeys(false);
+    config.setMultipleResultSetsEnabled(true);
     config.setUseColumnLabel(true);
     config.setDefaultStatementTimeout(5000);
     config.setDefaultFetchSize(100);
   }
 
   @Test
-  void shouldInsertNewAuthorWithBeforeAutoKey() throws Exception {
+  public void shouldInsertNewAuthorWithBeforeAutoKey() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -82,8 +75,7 @@ class BaseExecutorTest extends BaseDataTest {
       }
       assertEquals(123456, author.getId());
       if (author.getId() != BatchExecutor.BATCH_UPDATE_RETURN_VALUE) {
-        List<Author> authors = executor.query(selectStatement, author.getId(), RowBounds.DEFAULT,
-            Executor.NO_RESULT_HANDLER);
+        List<Author> authors = executor.query(selectStatement, author.getId(), RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
         executor.rollback(true);
         assertEquals(1, authors.size());
         assertEquals(author.toString(), authors.get(0).toString());
@@ -96,7 +88,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldInsertNewAuthor() throws Exception {
+  public void shouldInsertNewAuthor() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -117,7 +109,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectAllAuthorsAutoMapped() throws Exception {
+  public void shouldSelectAllAuthorsAutoMapped() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -139,7 +131,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldInsertNewAuthorWithAutoKey() throws Exception {
+  public void shouldInsertNewAuthorWithAutoKey() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -153,8 +145,7 @@ class BaseExecutorTest extends BaseDataTest {
       }
       assertTrue(-1 != author.getId());
       if (author.getId() != BatchExecutor.BATCH_UPDATE_RETURN_VALUE) {
-        List<Author> authors = executor.query(selectStatement, author.getId(), RowBounds.DEFAULT,
-            Executor.NO_RESULT_HANDLER);
+        List<Author> authors = executor.query(selectStatement, author.getId(), RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
         executor.rollback(true);
         assertEquals(1, authors.size());
         assertEquals(author.toString(), authors.get(0).toString());
@@ -167,14 +158,14 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldInsertNewAuthorByProc() throws Exception {
+  public void shouldInsertNewAuthorByProc() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       Author author = new Author(97, "someone", "******", "someone@apache.org", null, null);
       MappedStatement insertStatement = ExecutorTestHelper.prepareInsertAuthorProc(config);
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectOneAuthorMappedStatement(config);
-      executor.update(insertStatement, author);
+      int rows = executor.update(insertStatement, author);
       List<Author> authors = executor.query(selectStatement, 97, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
       executor.flushStatements();
       executor.rollback(true);
@@ -187,7 +178,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldInsertNewAuthorUsingSimpleNonPreparedStatements() throws Exception {
+  public void shouldInsertNewAuthorUsingSimpleNonPreparedStatements() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -208,7 +199,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldUpdateAuthor() throws Exception {
+  public void shouldUpdateAuthor() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -229,7 +220,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldDeleteAuthor() throws Exception {
+  public void shouldDeleteAuthor() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -249,21 +240,18 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectDiscriminatedPost() throws Exception {
+  public void shouldSelectDiscriminatedPost() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectDiscriminatedPost(config);
-      List<Map<String, String>> products = executor.query(selectStatement, null, RowBounds.DEFAULT,
-          Executor.NO_RESULT_HANDLER);
+      List<Map<String,String>> products = executor.query(selectStatement, null, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
       assertEquals(5, products.size());
-      for (Map<String, String> m : products) {
+      for (Map<String,String> m : products) {
         if ("IMAGES".equals(m.get("SECTION"))) {
           assertNull(m.get("subject"));
-          assertNotNull(m.get("id"));
         } else {
           assertNotNull(m.get("subject"));
-          assertNull(m.get("id"));
         }
       }
     } finally {
@@ -272,21 +260,18 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelect2DiscriminatedPosts() throws Exception {
+  public void shouldSelect2DiscriminatedPosts() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectDiscriminatedPost(config);
-      List<Map<String, String>> products = executor.query(selectStatement, null, new RowBounds(2, 2),
-          Executor.NO_RESULT_HANDLER);
+      List<Map<String,String>> products = executor.query(selectStatement, null, new RowBounds(2, 2), Executor.NO_RESULT_HANDLER);
       assertEquals(2, products.size());
-      for (Map<String, String> m : products) {
+      for (Map<String,String> m : products) {
         if ("IMAGES".equals(m.get("SECTION"))) {
           assertNull(m.get("subject"));
-          assertNotNull(m.get("id"));
         } else {
           assertNotNull(m.get("subject"));
-          assertNull(m.get("id"));
         }
       }
     } finally {
@@ -296,12 +281,11 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectTwoSetsOfAuthorsViaProc() throws Exception {
+  public void shouldSelectTwoSetsOfAuthorsViaProc() throws Exception {
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectTwoSetsOfAuthorsProc(config);
       List<List<Author>> authorSets = executor.query(selectStatement, new HashMap<String, Object>() {
-        private static final long serialVersionUID = 1L;
         {
           put("id1", 101);
           put("id2", 102);
@@ -321,7 +305,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldSelectAuthorViaOutParams() throws Exception {
+  public void shouldSelectAuthorViaOutParams() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -331,13 +315,14 @@ class BaseExecutorTest extends BaseDataTest {
       assertEquals("sally", author.getUsername());
       assertEquals("********", author.getPassword());
       assertEquals("sally@ibatis.apache.org", author.getEmail());
-      assertNull(author.getBio());
+      assertEquals(null, author.getBio());
     } catch (ExecutorException e) {
-      if (!(executor instanceof CachingExecutor)) {
+      if (executor instanceof CachingExecutor) {
+        // TODO see issue #464. Fail is OK.
+        assertTrue(e.getMessage().contains("OUT params is not supported"));
+      } else {
         throw e;
       }
-      // TODO see issue #464. Fail is OK.
-      assertTrue(e.getMessage().contains("OUT params is not supported"));
     } finally {
       executor.rollback(true);
       executor.close(false);
@@ -345,7 +330,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFetchPostsForBlog() throws Exception {
+  public void shouldFetchPostsForBlog() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -367,7 +352,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFetchOneOrphanedPostWithNoBlog() throws Exception {
+  public void shouldFetchOneOrphanedPostWithNoBlog() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -388,7 +373,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFetchPostWithBlogWithCompositeKey() throws Exception {
+  public void shouldFetchPostWithBlogWithCompositeKey() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -410,7 +395,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldFetchComplexBlogs() throws Exception {
+  public void shouldFetchComplexBlogs() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -432,12 +417,11 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldMapConstructorResults() throws Exception {
+  public void shouldMapConstructorResults() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
-      MappedStatement selectStatement = ExecutorTestHelper
-          .prepareSelectOneAuthorMappedStatementWithConstructorResults(config);
+      MappedStatement selectStatement = ExecutorTestHelper.prepareSelectOneAuthorMappedStatementWithConstructorResults(config);
       List<Author> authors = executor.query(selectStatement, 102, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
       executor.flushStatements();
       executor.rollback(true);
@@ -452,7 +436,7 @@ class BaseExecutorTest extends BaseDataTest {
   }
 
   @Test
-  void shouldClearDeferredLoads() throws Exception {
+  public void shouldClearDeferredLoads() throws Exception {
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
@@ -475,134 +459,6 @@ class BaseExecutorTest extends BaseDataTest {
       executor.rollback(true);
       executor.close(false);
     }
-  }
-
-  @Test
-  void testCreateCacheKeyWithAdditionalParameter() {
-    TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-
-    MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
-
-    Object parameterObject = 1;
-
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
-      {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-      }
-    }, parameterObject) {
-      {
-        setAdditionalParameter("id", 2);
-      }
-    };
-
-    Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
-    CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);
-
-    CacheKey expected = new CacheKey();
-    expected.update(mappedStatement.getId());
-    expected.update(RowBounds.DEFAULT.getOffset());
-    expected.update(RowBounds.DEFAULT.getLimit());
-    expected.update(boundSql.getSql());
-    expected.update(2);
-
-    assertEquals(expected, cacheKey);
-  }
-
-  @Test
-  void testCreateCacheKeyWithNull() {
-    TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-
-    MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
-
-    Object parameterObject = null;
-
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
-      {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-      }
-    }, parameterObject);
-
-    Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
-    CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);
-
-    CacheKey expected = new CacheKey();
-    expected.update(mappedStatement.getId());
-    expected.update(RowBounds.DEFAULT.getOffset());
-    expected.update(RowBounds.DEFAULT.getLimit());
-    expected.update(boundSql.getSql());
-    expected.update(null);
-
-    assertEquals(expected, cacheKey);
-  }
-
-  @Test
-  void testCreateCacheKeyWithTypeHandler() {
-    TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-
-    MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
-
-    Object parameterObject = 1;
-
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
-      {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-      }
-    }, parameterObject);
-
-    Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
-    CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);
-
-    CacheKey expected = new CacheKey();
-    expected.update(mappedStatement.getId());
-    expected.update(RowBounds.DEFAULT.getOffset());
-    expected.update(RowBounds.DEFAULT.getLimit());
-    expected.update(boundSql.getSql());
-    expected.update(1);
-
-    assertEquals(expected, cacheKey);
-  }
-
-  @Test
-  void testCreateCacheKeyWithMetaObject() {
-    TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
-
-    MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
-
-    Author parameterObject = new Author(-1, "cbegin", "******", "cbegin@nowhere.com", "N/A", Section.NEWS);
-
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
-      {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-        add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-        add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-        add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
-        add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-        add(new ParameterMapping.Builder(config, "favouriteSection", registry.getTypeHandler(Section.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-      }
-    }, parameterObject);
-
-    Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
-    CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);
-
-    CacheKey expected = new CacheKey();
-    expected.update(mappedStatement.getId());
-    expected.update(RowBounds.DEFAULT.getOffset());
-    expected.update(RowBounds.DEFAULT.getLimit());
-    expected.update(boundSql.getSql());
-    expected.update(parameterObject.getId());
-    expected.update(parameterObject.getUsername());
-    expected.update(parameterObject.getPassword());
-    expected.update(parameterObject.getEmail());
-    expected.update(parameterObject.getBio());
-    expected.update(parameterObject.getFavouriteSection());
-
-    assertEquals(expected, cacheKey);
   }
 
   protected Executor createExecutor(Transaction transaction) {

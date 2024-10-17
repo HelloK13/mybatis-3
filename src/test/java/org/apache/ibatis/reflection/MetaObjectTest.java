@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package org.apache.ibatis.reflection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,10 +34,10 @@ import org.apache.ibatis.domain.misc.CustomBeanWrapperFactory;
 import org.apache.ibatis.domain.misc.RichType;
 import org.junit.jupiter.api.Test;
 
-class MetaObjectTest {
+public class MetaObjectTest {
 
   @Test
-  void shouldGetAndSetField() {
+  public void shouldGetAndSetField() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richField", "foo");
@@ -46,7 +45,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetNestedField() {
+  public void shouldGetAndSetNestedField() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richType.richField", "foo");
@@ -54,7 +53,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetProperty() {
+  public void shouldGetAndSetProperty() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richProperty", "foo");
@@ -62,7 +61,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetNestedProperty() {
+  public void shouldGetAndSetNestedProperty() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richType.richProperty", "foo");
@@ -70,7 +69,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetMapPair() {
+  public void shouldGetAndSetMapPair() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richMap.key", "foo");
@@ -78,7 +77,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetMapPairUsingArraySyntax() {
+  public void shouldGetAndSetMapPairUsingArraySyntax() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richMap[key]", "foo");
@@ -86,7 +85,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetNestedMapPair() {
+  public void shouldGetAndSetNestedMapPair() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richType.richMap.key", "foo");
@@ -94,7 +93,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetNestedMapPairUsingArraySyntax() {
+  public void shouldGetAndSetNestedMapPairUsingArraySyntax() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richType.richMap[key]", "foo");
@@ -102,7 +101,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetListItem() {
+  public void shouldGetAndSetListItem() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richList[0]", "foo");
@@ -110,7 +109,15 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetAndSetNestedListItem() {
+  public void shouldSetAndGetSelfListItem() {
+    RichType rich = new RichType();
+    MetaObject meta = SystemMetaObject.forObject(rich);
+    meta.setValue("richList[0]", "foo");
+    assertEquals("foo", meta.getValue("richList[0]"));
+  }
+
+  @Test
+  public void shouldGetAndSetNestedListItem() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     meta.setValue("richType.richList[0]", "foo");
@@ -118,7 +125,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetReadablePropertyNames() {
+  public void shouldGetReadablePropertyNames() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     String[] readables = meta.getGetterNames();
@@ -131,7 +138,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldGetWriteablePropertyNames() {
+  public void shouldGetWriteablePropertyNames() {
     RichType rich = new RichType();
     MetaObject meta = SystemMetaObject.forObject(rich);
     String[] writeables = meta.getSetterNames();
@@ -144,27 +151,27 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldSetPropertyOfNullNestedProperty() {
+  public void shouldSetPropertyOfNullNestedProperty() {
     MetaObject richWithNull = SystemMetaObject.forObject(new RichType());
     richWithNull.setValue("richType.richProperty", "foo");
     assertEquals("foo", richWithNull.getValue("richType.richProperty"));
   }
 
   @Test
-  void shouldSetPropertyOfNullNestedPropertyWithNull() {
+  public void shouldSetPropertyOfNullNestedPropertyWithNull() {
     MetaObject richWithNull = SystemMetaObject.forObject(new RichType());
     richWithNull.setValue("richType.richProperty", null);
-    assertNull(richWithNull.getValue("richType.richProperty"));
+    assertEquals(null, richWithNull.getValue("richType.richProperty"));
   }
 
   @Test
-  void shouldGetPropertyOfNullNestedProperty() {
+  public void shouldGetPropertyOfNullNestedProperty() {
     MetaObject richWithNull = SystemMetaObject.forObject(new RichType());
     assertNull(richWithNull.getValue("richType.richProperty"));
   }
 
   @Test
-  void shouldVerifyHasReadablePropertiesReturnedByGetReadablePropertyNames() {
+  public void shouldVerifyHasReadablePropertiesReturnedByGetReadablePropertyNames() {
     MetaObject object = SystemMetaObject.forObject(new Author());
     for (String readable : object.getGetterNames()) {
       assertTrue(object.hasGetter(readable));
@@ -172,7 +179,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldVerifyHasWriteablePropertiesReturnedByGetWriteablePropertyNames() {
+  public void shouldVerifyHasWriteablePropertiesReturnedByGetWriteablePropertyNames() {
     MetaObject object = SystemMetaObject.forObject(new Author());
     for (String writeable : object.getSetterNames()) {
       assertTrue(object.hasSetter(writeable));
@@ -180,7 +187,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldSetAndGetProperties() {
+  public void shouldSetAndGetProperties() {
     MetaObject object = SystemMetaObject.forObject(new Author());
     object.setValue("email", "test");
     assertEquals("test", object.getValue("email"));
@@ -188,7 +195,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldVerifyPropertyTypes() {
+  public void shouldVerifyPropertyTypes() {
     MetaObject object = SystemMetaObject.forObject(new Author());
     assertEquals(6, object.getSetterNames().length);
     assertEquals(int.class, object.getGetterType("id"));
@@ -200,7 +207,7 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldDemonstrateDeeplyNestedMapProperties() {
+  public void shouldDemonstrateDeeplyNestedMapProperties() {
     HashMap<String, String> map = new HashMap<>();
     MetaObject metaMap = SystemMetaObject.forObject(map);
 
@@ -227,17 +234,15 @@ class MetaObjectTest {
     assertEquals(3, metaMap.getGetterNames().length);
     assertEquals(3, metaMap.getSetterNames().length);
 
-    @SuppressWarnings("unchecked")
-    Map<String, String> name = (Map<String, String>) metaMap.getValue("name");
-    @SuppressWarnings("unchecked")
-    Map<String, String> address = (Map<String, String>) metaMap.getValue("address");
+    Map<String,String> name = (Map<String,String>) metaMap.getValue("name");
+    Map<String,String> address = (Map<String,String>) metaMap.getValue("address");
 
     assertEquals("Clinton", name.get("first"));
     assertEquals("1 Some Street", address.get("street"));
   }
 
   @Test
-  void shouldDemonstrateNullValueInMap() {
+  public void shouldDemonstrateNullValueInMap() {
     HashMap<String, String> map = new HashMap<>();
     MetaObject metaMap = SystemMetaObject.forObject(map);
     assertFalse(metaMap.hasGetter("phone.home"));
@@ -260,24 +265,23 @@ class MetaObjectTest {
   }
 
   @Test
-  void shouldNotUseObjectWrapperFactoryByDefault() {
+  public void shouldNotUseObjectWrapperFactoryByDefault() {
     MetaObject meta = SystemMetaObject.forObject(new Author());
     assertTrue(!meta.getObjectWrapper().getClass().equals(CustomBeanWrapper.class));
   }
 
   @Test
-  void shouldUseObjectWrapperFactoryWhenSet() {
-    MetaObject meta = MetaObject.forObject(new Author(), SystemMetaObject.DEFAULT_OBJECT_FACTORY,
-        new CustomBeanWrapperFactory(), new DefaultReflectorFactory());
-    assertEquals(CustomBeanWrapper.class, meta.getObjectWrapper().getClass());
+  public void shouldUseObjectWrapperFactoryWhenSet() {
+    MetaObject meta = MetaObject.forObject(new Author(), SystemMetaObject.DEFAULT_OBJECT_FACTORY, new CustomBeanWrapperFactory(), new DefaultReflectorFactory());
+    assertTrue(meta.getObjectWrapper().getClass().equals(CustomBeanWrapper.class));
 
     // Make sure the old default factory is in place and still works
     meta = SystemMetaObject.forObject(new Author());
-    assertNotEquals(CustomBeanWrapper.class, meta.getObjectWrapper().getClass());
+    assertFalse(meta.getObjectWrapper().getClass().equals(CustomBeanWrapper.class));
   }
 
   @Test
-  void shouldMethodHasGetterReturnTrueWhenListElementSet() {
+  public void shouldMethodHasGetterReturnTrueWhenListElementSet() {
     List<Object> param1 = new ArrayList<>();
     param1.add("firstParam");
     param1.add(222);

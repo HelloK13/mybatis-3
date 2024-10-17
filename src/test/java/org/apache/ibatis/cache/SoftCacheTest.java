@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,28 +15,25 @@
  */
 package org.apache.ibatis.cache;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.apache.ibatis.cache.decorators.SerializedCache;
 import org.apache.ibatis.cache.decorators.SoftCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-class SoftCacheTest {
+public class SoftCacheTest {
 
   @Test
-  void shouldDemonstrateObjectsBeingCollectedAsNeeded() {
+  public void shouldDemonstrateObjectsBeingCollectedAsNeeded() throws Exception {
     final int N = 3000000;
     SoftCache cache = new SoftCache(new PerpetualCache("default"));
     for (int i = 0; i < N; i++) {
-      byte[] array = new byte[5001]; // waste a bunch of memory
+      byte[] array = new byte[5001]; //waste a bunch of memory
       array[5000] = 1;
       cache.putObject(i, array);
-      cache.getObject(i);
+      Object value = cache.getObject(i);
       if (cache.getSize() < i + 1) {
-        // System.out.println("Cache exceeded with " + (i + 1) + " entries.");
+        //System.out.println("Cache exceeded with " + (i + 1) + " entries.");
         break;
       }
     }
@@ -44,7 +41,7 @@ class SoftCacheTest {
   }
 
   @Test
-  void shouldDemonstrateCopiesAreEqual() {
+  public void shouldDemonstrateCopiesAreEqual() {
     Cache cache = new SoftCache(new PerpetualCache("default"));
     cache = new SerializedCache(cache);
     for (int i = 0; i < 1000; i++) {
@@ -55,7 +52,7 @@ class SoftCacheTest {
   }
 
   @Test
-  void shouldRemoveItemOnDemand() {
+  public void shouldRemoveItemOnDemand() {
     Cache cache = new SoftCache(new PerpetualCache("default"));
     cache.putObject(0, 0);
     assertNotNull(cache.getObject(0));
@@ -64,7 +61,7 @@ class SoftCacheTest {
   }
 
   @Test
-  void shouldFlushAllItemsOnDemand() {
+  public void shouldFlushAllItemsOnDemand() {
     Cache cache = new SoftCache(new PerpetualCache("default"));
     for (int i = 0; i < 5; i++) {
       cache.putObject(i, i);

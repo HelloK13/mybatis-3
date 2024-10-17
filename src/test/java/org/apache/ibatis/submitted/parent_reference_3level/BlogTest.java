@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,7 @@
  */
 package org.apache.ibatis.submitted.parent_reference_3level;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 
@@ -29,26 +28,26 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class BlogTest {
+public class BlogTest {
 
   protected SqlSessionFactory sqlSessionFactory;
 
-  String getConfigPath() {
+  protected String getConfigPath() {
     return "org/apache/ibatis/submitted/parent_reference_3level/mybatis-config.xml";
   }
 
   @BeforeEach
-  void setUp() throws Exception {
+  public void setUp() throws Exception {
     try (Reader reader = Resources.getResourceAsReader(getConfigPath())) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/parent_reference_3level/CreateDB.sql");
+            "org/apache/ibatis/submitted/parent_reference_3level/CreateDB.sql");
   }
 
   @Test
-  void testSelectBlogWithPosts() {
+  public void testSelectBlogWithPosts() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       Mapper mapper = session.getMapper(Mapper.class);
       Blog result = mapper.selectBlogByPrimaryKey(1);
@@ -65,7 +64,7 @@ class BlogTest {
   }
 
   @Test
-  void testSelectBlogWithoutPosts() {
+  public void testSelectBlogWithoutPosts() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       Mapper mapper = session.getMapper(Mapper.class);
       Blog result = mapper.selectBlogByPrimaryKey(2);
@@ -76,7 +75,7 @@ class BlogTest {
   }
 
   @Test
-  void testSelectBlogWithPostsColumnPrefix() {
+  public void testSelectBlogWithPostsColumnPrefix() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       Mapper mapper = session.getMapper(Mapper.class);
       Blog result = mapper.selectBlogByPrimaryKeyColumnPrefix(1);
@@ -93,7 +92,7 @@ class BlogTest {
   }
 
   @Test
-  void testSelectBlogWithoutPostsColumnPrefix() {
+  public void testSelectBlogWithoutPostsColumnPrefix() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       Mapper mapper = session.getMapper(Mapper.class);
       Blog result = mapper.selectBlogByPrimaryKeyColumnPrefix(2);

@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ResultSetLoggerTest {
+public class ResultSetLoggerTest {
 
   @Mock
   private ResultSet rs;
@@ -41,7 +41,7 @@ class ResultSetLoggerTest {
   @Mock
   private ResultSetMetaData metaData;
 
-  private void setup(int type) throws SQLException {
+  public void setup(int type) throws SQLException {
     when(rs.next()).thenReturn(true);
     when(rs.getMetaData()).thenReturn(metaData);
     when(metaData.getColumnCount()).thenReturn(1);
@@ -53,14 +53,14 @@ class ResultSetLoggerTest {
   }
 
   @Test
-  void shouldNotPrintBlobs() throws SQLException {
+  public void shouldNotPrintBlobs() throws SQLException {
     setup(Types.LONGNVARCHAR);
     verify(log).trace("<==    Columns: ColumnName");
     verify(log).trace("<==        Row: <<BLOB>>");
   }
 
   @Test
-  void shouldPrintVarchars() throws SQLException {
+  public void shouldPrintVarchars() throws SQLException {
     when(rs.getString(1)).thenReturn("value");
     setup(Types.VARCHAR);
     verify(log).trace("<==    Columns: ColumnName");

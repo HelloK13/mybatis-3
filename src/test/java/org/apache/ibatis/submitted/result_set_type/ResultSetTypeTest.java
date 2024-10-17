@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2022 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,10 +14,6 @@
  *    limitations under the License.
  */
 package org.apache.ibatis.submitted.result_set_type;
-
-import java.io.Reader;
-import java.util.List;
-import java.util.function.Function;
 
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.io.Resources;
@@ -30,21 +26,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ResultSetTypeTest {
+import java.io.Reader;
+import java.util.List;
+import java.util.function.Function;
+
+public class ResultSetTypeTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 
   @BeforeAll
-  static void setUp() throws Exception {
+  public static void setUp() throws Exception {
     // create an SqlSessionFactory
-    try (Reader reader = Resources
-        .getResourceAsReader("org/apache/ibatis/submitted/result_set_type/mybatis-config.xml")) {
+    try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/result_set_type/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
 
     // populate in-memory database
-    ScriptRunner runner = new ScriptRunner(
-        sqlSessionFactory.getConfiguration().getEnvironment().getDataSource().getConnection());
+    ScriptRunner runner = new ScriptRunner(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource().getConnection());
     runner.setDelimiter("go");
     runner.setLogWriter(null);
     runner.setErrorLogWriter(null);
@@ -52,7 +50,7 @@ class ResultSetTypeTest {
   }
 
   @Test
-  void testWithStatement() {
+  public void testWithStatement() {
     test(mapper -> mapper.getUserWithStatementAndUnset(new RowBounds(5, 3)), 0);
     test(mapper -> mapper.getUserWithStatementAndDefault(new RowBounds(4, 3)), 1);
     test(mapper -> mapper.getUserWithStatementAndForwardOnly(new RowBounds(3, 3)), 2);
@@ -61,7 +59,7 @@ class ResultSetTypeTest {
   }
 
   @Test
-  void testWithPrepared() {
+  public void testWithPrepared() {
     test(mapper -> mapper.getUserWithPreparedAndUnset(new RowBounds(5, 3)), 0);
     test(mapper -> mapper.getUserWithPreparedAndDefault(new RowBounds(4, 3)), 1);
     test(mapper -> mapper.getUserWithPreparedAndForwardOnly(new RowBounds(3, 3)), 2);
@@ -70,7 +68,7 @@ class ResultSetTypeTest {
   }
 
   @Test
-  void testWithCallable() {
+  public void testWithCallable() {
     test(mapper -> mapper.getUserWithCallableAndUnset(new RowBounds(5, 3)), 0);
     test(mapper -> mapper.getUserWithCallableAndDefault(new RowBounds(4, 3)), 1);
     test(mapper -> mapper.getUserWithCallableAndForwardOnly(new RowBounds(3, 3)), 2);

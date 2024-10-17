@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,10 +26,11 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
- * PreparedStatement proxy to add logging.
+ * PreparedStatement proxy to add logging
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
+ *
  */
 public final class PreparedStatementLogger extends BaseJdbcLogger implements InvocationHandler {
 
@@ -57,8 +58,7 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
         } else {
           return method.invoke(statement, params);
         }
-      }
-      if (SET_METHODS.contains(method.getName())) {
+      } else if (SET_METHODS.contains(method.getName())) {
         if ("setNull".equals(method.getName())) {
           setColumn(params[0], null);
         } else {
@@ -83,26 +83,21 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
   }
 
   /**
-   * Creates a logging version of a PreparedStatement.
+   * Creates a logging version of a PreparedStatement
    *
-   * @param stmt
-   *          - the statement
-   * @param statementLog
-   *          - the statement log
-   * @param queryStack
-   *          - the query stack
-   *
+   * @param stmt - the statement
+   * @param statementLog - the statement log
+   * @param queryStack - the query stack
    * @return - the proxy
    */
   public static PreparedStatement newInstance(PreparedStatement stmt, Log statementLog, int queryStack) {
     InvocationHandler handler = new PreparedStatementLogger(stmt, statementLog, queryStack);
     ClassLoader cl = PreparedStatement.class.getClassLoader();
-    return (PreparedStatement) Proxy.newProxyInstance(cl,
-        new Class[] { PreparedStatement.class, CallableStatement.class }, handler);
+    return (PreparedStatement) Proxy.newProxyInstance(cl, new Class[]{PreparedStatement.class, CallableStatement.class}, handler);
   }
 
   /**
-   * Return the wrapped prepared statement.
+   * Return the wrapped prepared statement
    *
    * @return the PreparedStatement
    */

@@ -1,11 +1,11 @@
-/*
- *    Copyright 2009-2023 the original author or authors.
+/**
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
- *       https://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,24 +36,23 @@ import org.junit.jupiter.api.Test;
  *
  * @author Ryan Lamore
  */
-class DefaultObjectFactoryTest {
+public class DefaultObjectFactoryTest {
 
   @Test
-  void createClass() {
+  public void createClass() throws Exception {
     DefaultObjectFactory defaultObjectFactory = new DefaultObjectFactory();
-    TestClass testClass = defaultObjectFactory.create(TestClass.class, Arrays.asList(String.class, Integer.class),
-        Arrays.asList("foo", 0));
+    TestClass testClass = defaultObjectFactory.create(TestClass.class,
+        Arrays.<Class<?>>asList(String.class, Integer.class), Arrays.<Object>asList("foo", 0));
 
     Assertions.assertEquals((Integer) 0, testClass.myInteger, "myInteger didn't match expected");
     Assertions.assertEquals("foo", testClass.myString, "myString didn't match expected");
   }
 
   @Test
-  void createClassThrowsProperErrorMsg() {
+  public void createClassThrowsProperErrorMsg() {
     DefaultObjectFactory defaultObjectFactory = new DefaultObjectFactory();
     try {
-      defaultObjectFactory.create(TestClass.class, Collections.singletonList(String.class),
-          Collections.singletonList("foo"));
+      defaultObjectFactory.create(TestClass.class, Collections.<Class<?>>singletonList(String.class), Collections.<Object>singletonList("foo"));
       Assertions.fail("Should have thrown ReflectionException");
     } catch (Exception e) {
       Assertions.assertTrue(e instanceof ReflectionException, "Should be ReflectionException");
@@ -63,14 +62,14 @@ class DefaultObjectFactoryTest {
   }
 
   @Test
-  void createHashMap() {
-    DefaultObjectFactory defaultObjectFactory = new DefaultObjectFactory();
-    Map map = defaultObjectFactory.create(Map.class, null, null);
-    Assertions.assertTrue(map instanceof HashMap, "Should be HashMap");
+  public void creatHashMap() throws  Exception{
+     DefaultObjectFactory defaultObjectFactory=new DefaultObjectFactory();
+     Map  map= defaultObjectFactory.create(Map.class,null,null);
+     Assertions.assertTrue(map instanceof HashMap, "Should be HashMap");
   }
 
   @Test
-  void createArrayList() {
+  public void createArrayList() throws Exception {
     DefaultObjectFactory defaultObjectFactory = new DefaultObjectFactory();
     List list = defaultObjectFactory.create(List.class);
     Assertions.assertTrue(list instanceof ArrayList, " list should be ArrayList");
@@ -83,14 +82,14 @@ class DefaultObjectFactoryTest {
   }
 
   @Test
-  void createTreeSet() {
+  public void createTreeSet() throws Exception {
     DefaultObjectFactory defaultObjectFactory = new DefaultObjectFactory();
     SortedSet sortedSet = defaultObjectFactory.create(SortedSet.class);
     Assertions.assertTrue(sortedSet instanceof TreeSet, " sortedSet should be TreeSet");
   }
 
   @Test
-  void createHashSet() {
+  public void createHashSet() throws Exception {
     DefaultObjectFactory defaultObjectFactory = new DefaultObjectFactory();
     Set set = defaultObjectFactory.create(Set.class);
     Assertions.assertTrue(set instanceof HashSet, " set should be HashSet");
